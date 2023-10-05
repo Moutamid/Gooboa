@@ -64,7 +64,6 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/receipt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line1"
@@ -156,7 +155,6 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/receipt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
          android:layout_marginLeft="20dp"

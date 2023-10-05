@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.app.gobooa.R;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
@@ -48,8 +49,7 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
         recyclerViewProductsList.setAdapter(null);
         EventsListAdapter adapter = new EventsListAdapter(PreviewActivity.this, MainActivity.modelClass.getLineItemsList());
         recyclerViewProductsList.setAdapter(adapter);
-        if(printing!=null)
-        {
+        if (printing != null) {
             printing.setPrintingCallback(this);
         }
         print_btn.setOnClickListener(new View.OnClickListener() {
@@ -57,15 +57,40 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
             public void onClick(View view) {
                 if (!Printooth.INSTANCE.hasPairedPrinter()) {
                     startActivityForResult(new Intent(PreviewActivity.this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
-                }
-                else {
-                    printing=Printooth.INSTANCE.printer();
-
+                } else {
+                    printing = Printooth.INSTANCE.printer();
                     ArrayList<Printable> printables = new ArrayList<>();
                     printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Testing")
+                            .setText("CUPTORUL CU PIZZA")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("CUPTORUL CU PIZZA")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("123456789")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("------------------------------------------------")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Receipt")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("------------------------------------------------")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
                     printing.print(printables);
@@ -78,18 +103,17 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==ScanningActivity.SCANNING_FOR_PRINTER&&resultCode==Activity.RESULT_OK)
-      try {
-          initprinting();
-      }catch (Exception e)
-      {
-          Log.d("Exception", e.getMessage());
-      }
+        if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK)
+            try {
+                initprinting();
+            } catch (Exception e) {
+                Log.d("Exception", e.getMessage());
+            }
     }
 
     private void initprinting() {
-        if(!Printooth.INSTANCE.hasPairedPrinter())
-            printing=Printooth.INSTANCE.printer();
+        if (!Printooth.INSTANCE.hasPairedPrinter())
+            printing = Printooth.INSTANCE.printer();
     }
 
     @Override
@@ -106,19 +130,19 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
 
     @Override
     public void connectionFailed(@NonNull String error) {
-        Log.d("status", "connectionFailed"+ error);
+        Log.d("status", "connectionFailed" + error);
 
     }
 
     @Override
     public void onError(@NonNull String error) {
-        Log.d("status", "onError"+ error);
+        Log.d("status", "onError" + error);
 
     }
 
     @Override
     public void onMessage(@NonNull String message) {
-        Log.d("status", "onMessage"+ message);
+        Log.d("status", "onMessage" + message);
 
     }
 
