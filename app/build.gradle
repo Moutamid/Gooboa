@@ -57,6 +57,8 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
 
+    // Dexter Permission Library
+    implementation 'com.karumi:dexter:6.2.3'
 
 }
 configurations.all {

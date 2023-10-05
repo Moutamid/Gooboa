@@ -604,8 +604,8 @@ Constants.checkApp(MainActivity.this);
             try {
                 //HttpRequest java class executePost() method is called to change order status on server through HttpURLConnection class..
                 response = HttpRequest.executePost(MainActivity.domain, MainActivity.consumerKey, MainActivity.consumerSecret, orderId, status);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                Log.d("Exception", "error" +e.getMessage());
             }
             return response;
         }

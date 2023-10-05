@@ -2,11 +2,17 @@ package com.app.gobooa.activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,8 +21,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.app.gobooa.R;
 import com.fxn.stash.Stash;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,8 +106,14 @@ public class PrinterConnectedActivity extends AppCompatActivity {
         btn_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    askPermission(Manifest.permission.BLUETOOTH_SCAN);
+                } else {
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
+                }
             }
         });
     }
@@ -102,7 +121,7 @@ public class PrinterConnectedActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ENABLE_BT) {
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
             is_bluetooth = true;
             permission_bluetooth.setVisibility(View.GONE);
             CheckBluetoothState();
@@ -114,10 +133,8 @@ public class PrinterConnectedActivity extends AppCompatActivity {
     private void CheckBluetoothState() {
         Stash.clear("device");
         ArrayList<String> bluetoothDevices = new ArrayList<>();
-
         // Listing paired devices
         Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
-
         if (devices.size() > 0) {
             no_paired.setVisibility(View.GONE);
             for (BluetoothDevice device : devices) {
@@ -128,16 +145,11 @@ public class PrinterConnectedActivity extends AppCompatActivity {
             }
             Stash.put("device", bluetoothDevices);
         } else {
-
             no_paired.setVisibility(View.VISIBLE);
-
         }
-
     }
-
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         //first cancel discovery because its very memory intensive.
-
 //        Log.d(TAG, "onItemClick: You Clicked on a device.");
 //        String deviceName = mBTDevices.get(i).getName();
 //        String deviceAddress = mBTDevices.get(i).getAddress();
@@ -163,4 +175,27 @@ public class PrinterConnectedActivity extends AppCompatActivity {
             permission_bluetooth.setVisibility(View.GONE);
         }
     }
+
+    private void askPermission(String permissionString) {
+        Dexter.withContext(PrinterConnectedActivity.this)
+                .withPermission(permissionString)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+                        permissionToken.continuePermissionRequest();
+                    }
+                }).check();
+    }
+
 }

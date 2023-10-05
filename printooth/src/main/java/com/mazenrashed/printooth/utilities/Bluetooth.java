@@ -26,7 +26,7 @@ import java.util.UUID;
 import com.mazenrashed.printooth.data.DiscoveryCallback;
 
 public class Bluetooth {
-    private static final int REQUEST_ENABLE_BT = 1111;
+    public static final int REQUEST_ENABLE_BT = 1111;
 
     private Context context;
     private UUID uuid;

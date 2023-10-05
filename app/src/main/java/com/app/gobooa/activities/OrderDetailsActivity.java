@@ -1,12 +1,18 @@
 package com.app.gobooa.activities;
 
+import static com.mazenrashed.printooth.utilities.Bluetooth.REQUEST_ENABLE_BT;
+
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,12 +27,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.gobooa.R;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.mazenrashed.printooth.Printooth;
 import com.mazenrashed.printooth.data.printable.Printable;
 import com.mazenrashed.printooth.data.printable.RawPrintable;
@@ -64,7 +78,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
 
     //This key variable is used to check whether user comes through clicking
     //on order from orders list screen or comes from clicking on order preview from new order pop up..
-    String key="";
+    String key = "";
     Printing printing;
 
     @Override
@@ -89,7 +103,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
 
         recyclerViewProductsList = findViewById(R.id.recyclerView);
         recyclerViewProductsList.setHasFixedSize(true);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),1);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
         recyclerViewProductsList.setLayoutManager(gridLayoutManager);
         if (printing != null) {
             printing.setPrintingCallback(this);
@@ -99,24 +113,25 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         textViewTodayDate.setText(cDate);
 
         //Display order to textViewID widget
-        textViewID.setText("ID: "+MainActivity.modelClass.getId());
-
+        if (MainActivity.modelClass.getId() != 0) {
+            textViewID.setText("ID: " + MainActivity.modelClass.getId());
+        }
         //This code 90-95 is to make first letter capital of order status and display it to textViewStatus..
         status = MainActivity.modelClass.getStatus();
         String inputStringStatus = MainActivity.modelClass.getStatus();
         String firstLetterStatus = inputStringStatus.substring(0, 1).toUpperCase();
         String restOfStringStatus = inputStringStatus.substring(1);
         String resultStringStatus = firstLetterStatus + restOfStringStatus;
-        textViewStatus.setText("  "+resultStringStatus+"  ");
+        textViewStatus.setText("  " + resultStringStatus + "  ");
 
         // This code 98-106 is used to change background color of order status widget according to order status
-        if(MainActivity.modelClass.getStatus().equals("cancelled") || MainActivity.modelClass.getStatus().equals("refunded") || MainActivity.modelClass.getStatus().equals("failed")){
+        if (MainActivity.modelClass.getStatus().equals("cancelled") || MainActivity.modelClass.getStatus().equals("refunded") || MainActivity.modelClass.getStatus().equals("failed")) {
             textViewStatus.setBackground(getResources().getDrawable(R.drawable.canceled));
-        }else if(MainActivity.modelClass.getStatus().equals("processing") || MainActivity.modelClass.getStatus().equals("pending")){
+        } else if (MainActivity.modelClass.getStatus().equals("processing") || MainActivity.modelClass.getStatus().equals("pending")) {
             textViewStatus.setBackground(getResources().getDrawable(R.drawable.processing));
-        }else if(MainActivity.modelClass.getStatus().equals("completed")){
+        } else if (MainActivity.modelClass.getStatus().equals("completed")) {
             textViewStatus.setBackground(getResources().getDrawable(R.drawable.completed));
-        }else if(MainActivity.modelClass.getStatus().equals("on-hold")){
+        } else if (MainActivity.modelClass.getStatus().equals("on-hold")) {
             textViewStatus.setBackground(getResources().getDrawable(R.drawable.onhold));
         }
 
@@ -128,36 +143,36 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         textViewLivrareCollectare.setText(resultString);
 
         //This code 116-118 is displaying user first last name, phone and address1, address2 who made the order..
-        textViewUser.setText(MainActivity.modelClass.getFirstName()+" "+MainActivity.modelClass.getLastName());
+        textViewUser.setText(MainActivity.modelClass.getFirstName() + " " + MainActivity.modelClass.getLastName());
         textViewPhone.setText(MainActivity.modelClass.getPhone());
-        textViewAddress.setText("Address 1: "+MainActivity.modelClass.getAddress1()+"\nAddress 2: "+MainActivity.modelClass.getAddress2());
+        textViewAddress.setText("Address 1: " + MainActivity.modelClass.getAddress1() + "\nAddress 2: " + MainActivity.modelClass.getAddress2());
 
         //This code 121-123 is formatting the date on which order is created according to date format you provided
         String[] arr = MainActivity.modelClass.getDateCreated().split("T");
         String[] arr2 = arr[0].split("-");
-        textViewDateCreated.setText(arr2[2]+"/"+arr2[1]+"/"+arr2[0]+", "+arr[1]);
+        textViewDateCreated.setText(arr2[2] + "/" + arr2[1] + "/" + arr2[0] + ", " + arr[1]);
 
         //This line 126 is displaying time and date from meta data variable of server
-        textViewTimeMeta.setText("Time: "+MainActivity.modelClass.getMetaDataList().get(3).getValue()+", Ora: "+MainActivity.modelClass.getMetaDataList().get(4).getValue());
+        textViewTimeMeta.setText("Time: " + MainActivity.modelClass.getMetaDataList().get(3).getValue() + ", Ora: " + MainActivity.modelClass.getMetaDataList().get(4).getValue());
 
         //This code 129-133 is used to display payment method of order, if method = code then Cash otherwise Card..
-        if(MainActivity.modelClass.getPaymentMethod().equals("cod")){
+        if (MainActivity.modelClass.getPaymentMethod().equals("cod")) {
             textViewPayMethod.setText("Plata: Cash");
-        }else {
+        } else {
             textViewPayMethod.setText("Plata: Card");
         }
 
         //This code 137-139 is displaying products of order in a list by using RecyclerView widget with the help of
         // EventsListAdapter an RecylerView adapter class
         recyclerViewProductsList.setAdapter(null);
-        EventsListAdapter adapter = new EventsListAdapter(OrderDetailsActivity.this,MainActivity.modelClass.getLineItemsList());
+        EventsListAdapter adapter = new EventsListAdapter(OrderDetailsActivity.this, MainActivity.modelClass.getLineItemsList());
         recyclerViewProductsList.setAdapter(adapter);
 
         //This 143-150 is checking whether user is coming by cliking on order from orders list of coming from clicking on
         //order preview. If user is coming from order preview then simply hide print button and order status widgets...
         Intent intent = getIntent();
         key = intent.getStringExtra("key");
-        if(key.equals("pop")){
+        if (key.equals("pop")) {
             buttonPrint.setVisibility(View.GONE);
             textViewHideStatus.setVisibility(View.GONE);
             textViewStatus.setVisibility(View.GONE);
@@ -190,13 +205,13 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                 View v1 = dialogView.findViewById(R.id.v1);
                 View v2 = dialogView.findViewById(R.id.v2);
 
-                if(MainActivity.modelClass.getStatus().equals("completed")){
+                if (MainActivity.modelClass.getStatus().equals("completed")) {
                     tvDone.setVisibility(View.GONE);
                     v1.setVisibility(View.GONE);
-                }else if(MainActivity.modelClass.getStatus().equals("on-hold")){
+                } else if (MainActivity.modelClass.getStatus().equals("on-hold")) {
                     tvProgress.setVisibility(View.GONE);
                     v2.setVisibility(View.GONE);
-                }else if(MainActivity.modelClass.getStatus().equals("cancelled")){
+                } else if (MainActivity.modelClass.getStatus().equals("cancelled")) {
                     tvCanceled.setVisibility(View.GONE);
                     v2.setVisibility(View.GONE);
                 }
@@ -235,77 +250,82 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         buttonPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!Printooth.INSTANCE.hasPairedPrinter()) {
-                    startActivityForResult(new Intent(OrderDetailsActivity.this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    askPermission(Manifest.permission.BLUETOOTH_SCAN);
                 } else {
-                    printing = Printooth.INSTANCE.printer();
-                    ArrayList<Printable> printables = new ArrayList<>();
-                    printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("CUPTORUL CU PIZZA")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
-                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("Str. Castanilor, Lupeni")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("123456789")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-                            .setNewLinesAfter(1)
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("------------------------------------------------")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setNewLinesAfter(1)
+                    if (!Printooth.INSTANCE.hasPairedPrinter()) {
+                        startActivityForResult(new Intent(OrderDetailsActivity.this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                    } else {
+                        printing = Printooth.INSTANCE.printer();
+                        ArrayList<Printable> printables = new ArrayList<>();
+                        printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("CUPTORUL CU PIZZA")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("Str. Castanilor, Lupeni")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("123456789")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                                .setNewLinesAfter(1)
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("------------------------------------------------")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                .setNewLinesAfter(1)
 
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("Receipt")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setNewLinesAfter(1)
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("Receipt")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                .setNewLinesAfter(1)
 
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("------------------------------------------------")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setNewLinesAfter(1)
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("------------------------------------------------")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                .setNewLinesAfter(1)
 
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("Product")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("quantity")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                            .setNewLinesAfter(1)
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("Product")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText("quantity")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                                .setNewLinesAfter(1)
 
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                            .setNewLinesAfter(1)
-                            .build());
-                    printing.print(printables);
-                    printing.setPrintingCallback(OrderDetailsActivity.this);
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                                .setNewLinesAfter(1)
+                                .build());
+                        printing.print(printables);
+                        printing.setPrintingCallback(OrderDetailsActivity.this);
+                    }
                 }
             }
         });
     }
+
     //This function is used to initiate backgroud thread to change order status according to user selected status from pop uo dialog..
     private void postDataOnServer() {
         showProgressDialog();
@@ -319,7 +339,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
             String response = null;
             try {
                 //Called executePost() method HttpRequest class to post/update order status data on server..
-                response = HttpRequest.executePost(MainActivity.domain,MainActivity.consumerKey,MainActivity.consumerSecret,MainActivity.modelClass.getId(),status);
+                response = HttpRequest.executePost(MainActivity.domain, MainActivity.consumerKey, MainActivity.consumerSecret, MainActivity.modelClass.getId(), status);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -329,44 +349,45 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         @Override
         protected void onPostExecute(String response) {
             hideProgressDialog();
-            Log.d("resss",response);
+            Log.d("resss", response);
 
             //This code 246-262 is used to change order status on textViewStatus widget change textViewStatus background color as well
-            if(response.equals("true")){
+            if (response.equals("true")) {
                 MainActivity.check = true;
                 String inputStringStatus = status;
                 String firstLetterStatus = inputStringStatus.substring(0, 1).toUpperCase();
                 String restOfStringStatus = inputStringStatus.substring(1);
                 String resultStringStatus = firstLetterStatus + restOfStringStatus;
-                textViewStatus.setText("  "+resultStringStatus+"  ");
+                textViewStatus.setText("  " + resultStringStatus + "  ");
 
-                if(status.equals("cancelled")){
+                if (status.equals("cancelled")) {
                     textViewStatus.setBackground(getResources().getDrawable(R.drawable.canceled));
-                }else if(status.equals("processing")){
+                } else if (status.equals("processing")) {
                     textViewStatus.setBackground(getResources().getDrawable(R.drawable.processing));
-                }else if(status.equals("completed")){
+                } else if (status.equals("completed")) {
                     textViewStatus.setBackground(getResources().getDrawable(R.drawable.completed));
                 }
                 finish();
-            }else if(response.equals("false")){
+            } else if (response.equals("false")) {
                 Toast.makeText(OrderDetailsActivity.this, "Error: Something went wrong while updating status!", Toast.LENGTH_LONG).show();
             }
         }
     }
+
     //This is an adapter class of RecyclerView to set the design of each item in a list. RecyclerView is used to display products list of order
     // How each product will look like in a list is designed by this adapter class..
-    public class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.ImageViewHolder>{
-        private Context mcontext ;
+    public class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.ImageViewHolder> {
+        private Context mcontext;
         private List<ProductModelClass> muploadList;
 
-        public EventsListAdapter(Context context , List<ProductModelClass> uploadList ) {
-            mcontext = context ;
-            muploadList = uploadList ;
+        public EventsListAdapter(Context context, List<ProductModelClass> uploadList) {
+            mcontext = context;
+            muploadList = uploadList;
         }
 
         @Override
         public EventsListAdapter.ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(mcontext).inflate(R.layout.products_list_layout, parent , false);
+            View v = LayoutInflater.from(mcontext).inflate(R.layout.products_list_layout, parent, false);
             return (new EventsListAdapter.ImageViewHolder(v));
         }
 
@@ -374,12 +395,12 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         public void onBindViewHolder(final EventsListAdapter.ImageViewHolder holder, @SuppressLint("RecyclerView") final int position) {
 
             final ProductModelClass product = muploadList.get(position);
-            String finalName = product.getName().replaceAll("<span>","");
-            String finalName2 = finalName.replaceAll("</span>","");
+            String finalName = product.getName().replaceAll("<span>", "");
+            String finalName2 = finalName.replaceAll("</span>", "");
             holder.tvProduct.setText(finalName2);
-            holder.tvQty.setText(product.getQty()+"");
+            holder.tvQty.setText(product.getQty() + "");
 
-            EventsListAdapter2 adapter2 = new EventsListAdapter2(OrderDetailsActivity.this,product.getExtraData());
+            EventsListAdapter2 adapter2 = new EventsListAdapter2(OrderDetailsActivity.this, product.getExtraData());
             holder.recyclerView.setAdapter(adapter2);
         }
 
@@ -388,7 +409,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
             return muploadList.size();
         }
 
-        public class ImageViewHolder extends RecyclerView.ViewHolder{
+        public class ImageViewHolder extends RecyclerView.ViewHolder {
             public TextView tvProduct;
             public TextView tvQty;
             public RecyclerView recyclerView;
@@ -402,7 +423,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                 recyclerView = itemView.findViewById(R.id.recyclerView);
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setNestedScrollingEnabled(false);
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),1);
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
                 recyclerView.setLayoutManager(gridLayoutManager);
 
             }
@@ -413,18 +434,18 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
       Like every product has some extra variables in it meta data tag. SO this class is used to display list within list.
       e.g All products of order are displayed in outer RecyclerView and extra variables of each product fro its meta data tag
       is displayed in inner RecyclerView */
-    public class EventsListAdapter2 extends RecyclerView.Adapter<EventsListAdapter2.ImageViewHolder>{
-        private Context mcontext ;
+    public class EventsListAdapter2 extends RecyclerView.Adapter<EventsListAdapter2.ImageViewHolder> {
+        private Context mcontext;
         private List<MetaDataModelClass> muploadList;
 
-        public EventsListAdapter2(Context context , List<MetaDataModelClass> uploadList ) {
-            mcontext = context ;
-            muploadList = uploadList ;
+        public EventsListAdapter2(Context context, List<MetaDataModelClass> uploadList) {
+            mcontext = context;
+            muploadList = uploadList;
         }
 
         @Override
         public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(mcontext).inflate(R.layout.products_list_layout2, parent , false);
+            View v = LayoutInflater.from(mcontext).inflate(R.layout.products_list_layout2, parent, false);
             return (new ImageViewHolder(v));
         }
 
@@ -432,7 +453,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         public void onBindViewHolder(final ImageViewHolder holder, @SuppressLint("RecyclerView") final int position) {
 
             final MetaDataModelClass product = muploadList.get(position);
-            holder.tvProduct.setText("-"+product.getKey()+": "+product.getValue());
+            holder.tvProduct.setText("-" + product.getKey() + ": " + product.getValue());
 
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -448,7 +469,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
             return muploadList.size();
         }
 
-        public class ImageViewHolder extends RecyclerView.ViewHolder{
+        public class ImageViewHolder extends RecyclerView.ViewHolder {
             public TextView tvProduct;
 
             public ImageViewHolder(View itemView) {
@@ -459,7 +480,6 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
             }
         }
     }
-
 
 
     @Override
@@ -512,4 +532,97 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
     public void disconnected() {
 
     }
+
+    private void askPermission(String permissionString) {
+        Dexter.withContext(OrderDetailsActivity.this)
+                .withPermission(permissionString)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                        if (!Printooth.INSTANCE.hasPairedPrinter()) {
+                            startActivityForResult(new Intent(OrderDetailsActivity.this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                        } else {
+                            printing = Printooth.INSTANCE.printer();
+                            ArrayList<Printable> printables = new ArrayList<>();
+                            printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("CUPTORUL CU PIZZA")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                    .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("Str. Castanilor, Lupeni")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("123456789")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                                    .setNewLinesAfter(1)
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("------------------------------------------------")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                    .setNewLinesAfter(1)
+
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("Receipt")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                    .setNewLinesAfter(1)
+
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("------------------------------------------------")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                                    .setNewLinesAfter(1)
+
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("Product")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText("quantity")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                                    .setNewLinesAfter(1)
+
+                                    .build());
+                            printables.add(new TextPrintable.Builder()
+                                    .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                                    .setNewLinesAfter(1)
+                                    .build());
+                            printing.print(printables);
+                            printing.setPrintingCallback(OrderDetailsActivity.this);
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse
+                                                           permissionDeniedResponse) {
+
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest
+                                                                           permissionRequest, PermissionToken permissionToken) {
+                        permissionToken.continuePermissionRequest();
+                    }
+                }).
+
+                check();
+    }
+
 }
