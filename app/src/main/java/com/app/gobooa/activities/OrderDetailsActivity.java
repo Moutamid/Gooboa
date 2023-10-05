@@ -1,6 +1,7 @@
 package com.app.gobooa.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -24,9 +27,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.gobooa.R;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
+import com.mazenrashed.printooth.Printooth;
+import com.mazenrashed.printooth.data.printable.Printable;
+import com.mazenrashed.printooth.data.printable.RawPrintable;
+import com.mazenrashed.printooth.data.printable.TextPrintable;
+import com.mazenrashed.printooth.data.printer.DefaultPrinter;
+import com.mazenrashed.printooth.ui.ScanningActivity;
+import com.mazenrashed.printooth.utilities.Printing;
+import com.mazenrashed.printooth.utilities.PrintingCallback;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +46,7 @@ import java.util.Locale;
 //This class/activity file is used to display details of order when user clicks on any order from list or when user clicks
 // on order preview. The same screen/activity used for both purposes. We can just differentiate if user comes through clicking
 // order from list or comes from order preview..
-public class OrderDetailsActivity extends BaseActivity {
+public class OrderDetailsActivity extends BaseActivity implements PrintingCallback {
 
     //Variables and views declaration..
     TextView textViewID, textViewLivrareCollectare, textViewUser, textViewPhone, textViewAddress,
@@ -53,6 +65,7 @@ public class OrderDetailsActivity extends BaseActivity {
     //This key variable is used to check whether user comes through clicking
     //on order from orders list screen or comes from clicking on order preview from new order pop up..
     String key="";
+    Printing printing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +91,9 @@ public class OrderDetailsActivity extends BaseActivity {
         recyclerViewProductsList.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),1);
         recyclerViewProductsList.setLayoutManager(gridLayoutManager);
-
+        if (printing != null) {
+            printing.setPrintingCallback(this);
+        }
         // This code 83-84 is used to get today's date and display it to textViewTodayDate widget..
         String cDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         textViewTodayDate.setText(cDate);
@@ -220,8 +235,74 @@ public class OrderDetailsActivity extends BaseActivity {
         buttonPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), PreviewActivity.class);
-                startActivity(intent);
+                if (!Printooth.INSTANCE.hasPairedPrinter()) {
+                    startActivityForResult(new Intent(OrderDetailsActivity.this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+                } else {
+                    printing = Printooth.INSTANCE.printer();
+                    ArrayList<Printable> printables = new ArrayList<>();
+                    printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("CUPTORUL CU PIZZA")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Str. Castanilor, Lupeni")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("123456789")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("------------------------------------------------")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Receipt")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("------------------------------------------------")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Product")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("quantity")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setNewLinesAfter(1)
+
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printing.print(printables);
+                    printing.setPrintingCallback(OrderDetailsActivity.this);
+                }
             }
         });
     }
@@ -377,5 +458,58 @@ public class OrderDetailsActivity extends BaseActivity {
 
             }
         }
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK)
+            try {
+                initprinting();
+            } catch (Exception e) {
+                Log.d("Exception", e.getMessage());
+            }
+    }
+
+    private void initprinting() {
+        if (!Printooth.INSTANCE.hasPairedPrinter())
+            printing = Printooth.INSTANCE.printer();
+    }
+
+    @Override
+    public void connectingWithPrinter() {
+        Log.d("status", "connectingWithPrinter");
+
+    }
+
+    @Override
+    public void printingOrderSentSuccessfully() {
+        Log.d("status", "printingOrderSentSuccessfully");
+
+    }
+
+    @Override
+    public void connectionFailed(@NonNull String error) {
+        Log.d("status", "connectionFailed" + error);
+
+    }
+
+    @Override
+    public void onError(@NonNull String error) {
+        Log.d("status", "onError" + error);
+
+    }
+
+    @Override
+    public void onMessage(@NonNull String message) {
+        Log.d("status", "onMessage" + message);
+
+    }
+
+    @Override
+    public void disconnected() {
+
     }
 }

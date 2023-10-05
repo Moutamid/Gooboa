@@ -446,8 +446,7 @@ Constants.checkApp(MainActivity.this);
                 String[] arr = dateCreated.split("T");
                 String[] arr2 = arr[0].split("-");
                 String date = arr2[2] + "-" + arr2[1] + "-" + arr2[0];
-//TODO uncomment this
-//                if(selectedDate.equals(date)){
+                if(selectedDate.equals(date)){
                 if (shippingFirstName.isEmpty() || shippingLastName.isEmpty() || shippingAddress_1.isEmpty() || shippingState.isEmpty() || shippingPhone.isEmpty()) {
                     String name1 = firstName;
                     String name2 = lastName;
@@ -475,7 +474,7 @@ Constants.checkApp(MainActivity.this);
                             citty, statte, postalCode, phoneee, metaDataList, productsList, currency, total);
                     ordersList.add(modelClass);
                 }
-//                }
+                }
             }
             Log.d("ordersList", ordersList.size() + "");
 

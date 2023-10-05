@@ -66,32 +66,59 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("CUPTORUL CU PIZZA")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                            .setText("Str. Castanilor, Lupeni")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("123456789")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                                    .setNewLinesAfter(1)
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("------------------------------------------------")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("Receipt")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("------------------------------------------------")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Product")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("quantity")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setNewLinesAfter(1)
+
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setNewLinesAfter(1)
                             .build());
                     printing.print(printables);
                     printing.setPrintingCallback(PreviewActivity.this);
