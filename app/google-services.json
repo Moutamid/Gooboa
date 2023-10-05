@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "347236091743",
+    "firebase_url": "https://gobooa-77803-default-rtdb.firebaseio.com",
+    "project_id": "gobooa-77803",
+    "storage_bucket": "gobooa-77803.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347236091743:android:a5c45a8594f974d8b3d8ea",
+        "android_client_info": {
+          "package_name": "com.app.gobooa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "347236091743-c5pvtum3amjshr24bp1hd9c1c3ev8vgh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKXrKMW0jqUjwzZpDaMk0e8iXq1kQ__ZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "347236091743-c5pvtum3amjshr24bp1hd9c1c3ev8vgh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

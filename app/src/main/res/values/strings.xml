@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Gobooa</string>
+
+    <string name="banner_ad_unit_id">ca-app-pub-8298339663251824/4284412362</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-8298339663251824/4005210763</string>
+    <string name="admob_id_app">ca-app-pub-8298339663251824~8786500824</string>
+</resources>

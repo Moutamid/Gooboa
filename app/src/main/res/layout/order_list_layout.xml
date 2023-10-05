@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tvID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="5dp"
+        android:text="ID"
+        android:fontFamily="@font/montserrat_regular"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvID"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="Phone"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPhone"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="5dp"
+        android:text="Status:"
+        android:fontFamily="@font/montserrat_regular"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPhone"
+        android:layout_toRightOf="@+id/tvS"
+        android:layout_marginLeft="7dp"
+        android:fontFamily="@font/montserrat_regular"
+        android:layout_marginTop="5dp"
+        android:padding="2dp"
+        android:text="  Processing  "
+        android:background="@drawable/processing"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvPayMethod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPhone"
+        android:fontFamily="@font/montserrat_regular"
+        android:layout_marginRight="7dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text="Pay Method"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvtotalCurrency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPayMethod"
+        android:layout_marginRight="7dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="Total, Currency"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvLivrareCollectare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="Livrare/Collectare"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="7dp"
+        android:fontFamily="@font/montserrat_regular"
+        android:layout_marginTop="5dp"
+        android:text="HH:MM:SS"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/grey"
+        android:layout_below="@+id/tvtotalCurrency"
+        android:layout_marginTop="10dp"/>
+</RelativeLayout>

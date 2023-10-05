@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#fff">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        android:id="@+id/card"
+        android:layout_marginTop="-8dp"
+        app:cardBackgroundColor="@color/theme_color"
+        app:cardElevation="15dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/relative">
+
+            <TextView
+                android:id="@+id/tvResources"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/montserrat_regular"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Comenzi"
+                android:textAlignment="center"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/tvTodayDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_below="@+id/tvResources"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/montserrat_regular"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Today's Date"
+                android:textAlignment="center"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="3dp"/>
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="8dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_arrow_back"/>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/card"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="ID"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvLivrareCollectare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:layout_centerHorizontal="true"
+                android:text="Livrare/Collectare"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="2dp"
+                android:layout_below="@+id/tvLivrareCollectare"
+                android:text="DD//MM/YY"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="2dp"
+                android:layout_below="@+id/tvDate"
+                android:text="HH:MM:SS"
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/imgUser"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="7dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/tvTime"
+                android:src="@drawable/user"/>
+
+            <TextView
+                android:id="@+id/tvUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/imgUser"
+                android:layout_marginTop="15dp"
+                android:layout_below="@+id/tvTime"
+                android:layout_marginLeft="5dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="User"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/imgPhone"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="11dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/imgUser"
+                android:src="@drawable/phone"/>
+
+            <TextView
+                android:id="@+id/tvPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/imgUser"
+                android:layout_marginTop="12dp"
+                android:layout_below="@+id/imgUser"
+                android:fontFamily="@font/montserrat_regular"
+                android:layout_marginLeft="7dp"
+                android:text="Phone"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/imgAddr"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="11dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/imgPhone"
+                android:src="@drawable/address"/>
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/imgUser"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/imgPhone"
+                android:layout_marginLeft="7dp"
+                android:text="Address"
+                android:fontFamily="@font/montserrat_regular"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/igPostal"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="11dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/tvAddress"
+                android:src="@drawable/postal"/>
+
+            <TextView
+                android:id="@+id/textViewDateCreated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/imgUser"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/tvAddress"
+                android:layout_marginLeft="7dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="Date Created"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvTimeMeta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/textViewDateCreated"
+                android:layout_marginLeft="11dp"
+                android:text="Time from Meta Data"
+                android:fontFamily="@font/montserrat_regular"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_below="@+id/tvTimeMeta"
+                android:layout_marginLeft="11dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="Status"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvTimeMeta"
+                android:layout_toRightOf="@+id/tvS"
+                android:layout_marginLeft="7dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:layout_marginTop="8dp"
+                android:padding="2dp"
+                android:text="  Processing  "
+                android:background="@drawable/canceled"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvPayMethod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvTimeMeta"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                android:fontFamily="@font/montserrat_regular"
+                android:layout_marginTop="10dp"
+                android:text="Plata:"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvStatus"
+                android:textAlignment="center"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="Detalii Comanda"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                app:cardCornerRadius="10dp"
+                android:id="@+id/cardView"
+                app:cardBackgroundColor="@color/white"
+                android:layout_below="@+id/tvDetails"
+                android:layout_marginTop="10dp"
+                app:cardElevation="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginRight="20dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/tvProd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Products"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvQty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_alignParentRight="true"
+                        android:text="Quantity"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
+
+                    <View
+                        android:id="@+id/v1"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/black"
+                        android:layout_below="@+id/tvQty"
+                        android:layout_marginTop="5dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/v1"
+                        />
+
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+        </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC"
+        android:id="@+id/view"
+        android:layout_marginBottom="5dp"
+        android:layout_above="@id/btnPrint"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnPrint"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="16sp"
+        android:elevation="15dp"
+        android:background="@drawable/corners_button3"
+        android:layout_alignParentBottom="true"
+        android:fontFamily="@font/montserrat_regular"
+        android:layout_marginBottom="20dp"
+        android:text="Print"
+        android:textColor="@color/black"/>
+
+</RelativeLayout>
