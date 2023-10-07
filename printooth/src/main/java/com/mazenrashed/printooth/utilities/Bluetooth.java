@@ -83,7 +83,7 @@ public class Bluetooth {
     };
 
     public void onStop() {
-        context.unregisterReceiver(bluetoothReceiver);
+//        context.unregisterReceiver(bluetoothReceiver);
     }
 
     public void enable() {

@@ -51,33 +51,33 @@ class ScanningActivity : AppCompatActivity() {
             }
 
             override fun onDiscoveryFinished() {
-                toolbar.title = if (devices.isNotEmpty()) "Select a Printer" else "No devices"
-                refreshLayout.isRefreshing = false
+//                toolbar.title = if (devices.isNotEmpty()) "Select a Printer" else "No devices"
+//                refreshLayout.isRefreshing = false
             }
 
             override fun onDeviceFound(device: BluetoothDevice) {
-                if (!devices.contains(device)) {
-                    devices.add(device)
-                    adapter.notifyDataSetChanged()
-                }
+//                if (!devices.contains(device)) {
+//                    devices.add(device)
+//                    adapter.notifyDataSetChanged()
+//                }
             }
 
             override fun onDevicePaired(device: BluetoothDevice) {
-                Printooth.setPrinter(device.name, device.address)
-                Toast.makeText(this@ScanningActivity, "Device Paired", Toast.LENGTH_SHORT).show()
-                adapter.notifyDataSetChanged()
-                setResult(Activity.RESULT_OK)
-                this@ScanningActivity.finish()
+//                Printooth.setPrinter(device.name, device.address)
+//                Toast.makeText(this@ScanningActivity, "Device Paired", Toast.LENGTH_SHORT).show()
+//                adapter.notifyDataSetChanged()
+//                setResult(Activity.RESULT_OK)
+//                this@ScanningActivity.finish()
             }
 
             override fun onDeviceUnpaired(device: BluetoothDevice) {
-                Toast.makeText(this@ScanningActivity, "Device unpaired", Toast.LENGTH_SHORT).show()
-                val pairedPrinter = Printooth.getPairedPrinter()
-                if (pairedPrinter != null && pairedPrinter.address == device.address)
-                    Printooth.removeCurrentPrinter()
-                devices.remove(device)
-                adapter.notifyDataSetChanged()
-                bluetooth.startScanning()
+//                Toast.makeText(this@ScanningActivity, "Device unpaired", Toast.LENGTH_SHORT).show()
+//                val pairedPrinter = Printooth.getPairedPrinter()
+//                if (pairedPrinter != null && pairedPrinter.address == device.address)
+//                    Printooth.removeCurrentPrinter()
+//                devices.remove(device)
+//                adapter.notifyDataSetChanged()
+//                bluetooth.startScanning()
             }
 
             override fun onError(message: String) {

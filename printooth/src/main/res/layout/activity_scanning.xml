@@ -11,10 +11,11 @@
         android:background="?colorPrimary"
         android:theme="?actionBarPopupTheme"
         app:title="Scanning.." />
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="250dp"
         android:layout_below="@id/toolbar">
 
         <ListView
@@ -22,5 +23,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
 </RelativeLayout>

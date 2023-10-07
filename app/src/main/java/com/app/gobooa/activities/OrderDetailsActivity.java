@@ -250,78 +250,74 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         buttonPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    askPermission(Manifest.permission.BLUETOOTH_SCAN);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                    askPermission(Manifest.permission.BLUETOOTH_SCAN);
+//                } else {
+                if (!Printooth.INSTANCE.hasPairedPrinter()) {
+                    startActivity(new Intent(OrderDetailsActivity.this, PrinterConnectActivity.class));
                 } else {
-                    if (!Printooth.INSTANCE.hasPairedPrinter()) {
-                        startActivityForResult(new Intent(OrderDetailsActivity.this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
-                    } else {
-                        printing = Printooth.INSTANCE.printer();
-                        ArrayList<Printable> printables = new ArrayList<>();
-                        printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("CUPTORUL CU PIZZA")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
-                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("Str. Castanilor, Lupeni")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("123456789")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-                                .setNewLinesAfter(1)
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("------------------------------------------------")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                .setNewLinesAfter(1)
-
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("Receipt")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                .setNewLinesAfter(1)
-
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("------------------------------------------------")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                .setNewLinesAfter(1)
-
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("Product")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText("quantity")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                                .setNewLinesAfter(1)
-
-                                .build());
-                        printables.add(new TextPrintable.Builder()
-                                .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                                .setNewLinesAfter(1)
-                                .build());
-                        printing.print(printables);
-                        printing.setPrintingCallback(OrderDetailsActivity.this);
-                    }
+                    printing = Printooth.INSTANCE.printer();
+                    ArrayList<Printable> printables = new ArrayList<>();
+                    printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("CUPTORUL CU PIZZA")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Str. Castanilor, Lupeni")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("123456789")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("------------------------------------------------")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Receipt")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("------------------------------------------------")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Product")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("quantity")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printing.print(printables);
+                    printing.setPrintingCallback(OrderDetailsActivity.this);
                 }
+
             }
         });
     }

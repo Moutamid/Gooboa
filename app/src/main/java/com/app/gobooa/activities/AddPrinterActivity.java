@@ -49,9 +49,10 @@ public class AddPrinterActivity extends AppCompatActivity {
         });
         details.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                startActivity(new Intent(AddPrinterActivity.this, PrinterConnectedActivity.class));
-                finish();
+            public void onClick(View view)
+            {
+                startActivity(new Intent(AddPrinterActivity.this, PrinterConnectActivity.class));
+                finishAffinity();
             }
         });
     }

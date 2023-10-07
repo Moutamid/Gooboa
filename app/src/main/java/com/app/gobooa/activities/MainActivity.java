@@ -211,7 +211,7 @@ Constants.checkApp(MainActivity.this);
 
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         if (menuItem.getItemId() == R.id.printer) {
-                            startActivity(new Intent(MainActivity.this, PrinterConnectedActivity.class));
+                            startActivity(new Intent(MainActivity.this, PrinterConnectActivity.class));
                         } else if (menuItem.getItemId() == R.id.dates) {
                             selectDate();
                         } else if (menuItem.getItemId() == R.id.logout) {

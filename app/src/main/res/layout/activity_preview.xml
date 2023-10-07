@@ -7,13 +7,18 @@
     android:background="@color/white"
     android:orientation="vertical"
     tools:context=".activities.PreviewActivity">
-
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    >
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="35dp"
+        android:visibility="gone"
         android:fontFamily="@font/montserrat_regular"
         android:gravity="center"
         android:text="CUPTORUL CU PIZZA"
@@ -188,6 +193,8 @@
         android:text="VA MULTUMIM !"
         android:textSize="18dp"
         android:textStyle="bold" />
+
+</LinearLayout>
 
     <TextView
         android:id="@+id/print"

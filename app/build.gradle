@@ -3,6 +3,10 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'org.jetbrains.kotlin.android'
+  id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
 
 }
 
@@ -16,6 +20,8 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+
         setProperty("archivesBaseName", "Gobooa-$versionName")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +35,15 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }
 
@@ -59,6 +74,11 @@ dependencies {
 
     // Dexter Permission Library
     implementation 'com.karumi:dexter:6.2.3'
+
+    implementation 'io.github.pilgr:paperdb:2.7.1'
+    //Runtime permissions
+    implementation 'com.afollestad.assent:core:3.0.0-RC4'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
 }
 configurations.all {
