@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Constants {
+    public static String LIST = "list";
 
     public static void checkApp(Activity activity) {
         String appName = "Bluetooth App";

@@ -36,8 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/montserrat_regular"
+android:layout_margin="20dp"                android:fontFamily="@font/montserrat_regular"
                 android:text="Comenzi"
                 android:textAlignment="center"
                 android:textColor="@color/white"
@@ -52,6 +51,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="7dp"
+                android:visibility="gone"
+
                 android:fontFamily="@font/montserrat_regular"
                 android:text="Today's Date"
                 android:textAlignment="center"
@@ -121,21 +122,18 @@
                     android:visibility="gone" />
 
             </LinearLayout>
+
+
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/refreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="45dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="15dp">
-
+                android:layout_marginTop="45dp">
 
                 <ListView
                     android:id="@+id/printers"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@color/theme_color" />
+                    android:layout_height="match_parent" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 

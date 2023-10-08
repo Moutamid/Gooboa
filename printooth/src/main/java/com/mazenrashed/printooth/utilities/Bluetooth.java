@@ -204,6 +204,7 @@ public class Bluetooth {
         if (bluetoothManager != null)
             bluetoothAdapter = bluetoothManager.getAdapter();
         context.registerReceiver(bluetoothReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+
     }
 
     public boolean isEnabled() {

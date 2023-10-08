@@ -19,12 +19,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
+import com.app.gobooa.activities.utils.Constants
+import com.app.gobooa.activities.utils.DeviceModel
+import com.fxn.stash.Stash
 import com.mazenrashed.printooth.Printooth
 import com.mazenrashed.printooth.R
 import com.mazenrashed.printooth.data.DiscoveryCallback
 import com.mazenrashed.printooth.utilities.Bluetooth
 import kotlinx.android.synthetic.main.activity_printer_connect.printers
-import kotlinx.android.synthetic.main.activity_printer_connect.refreshLayout
+import kotlinx.android.synthetic.main.activity_select_print_screen.refreshLayout
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -163,6 +166,14 @@ class SelectPrintScreen : AppCompatActivity() {
                     adapter.notifyDataSetChanged()
                     val intent = Intent(this@SelectPrintScreen, AddPrinterActivity::class.java)
                     intent.putExtra("name", devices[i].name)
+                    val resturantModelArrayList: java.util.ArrayList<String> =
+                        Stash.getArrayList<String>(
+                            Constants.LIST,
+                            DeviceModel::class.java
+                        )
+                    resturantModelArrayList.add(devices[i].name)
+                    Stash.put(Constants.LIST, resturantModelArrayList)
+
                     intent.putExtra("address", devices[i].address)
                     alertDialog.dismiss()
                     startActivity(intent)

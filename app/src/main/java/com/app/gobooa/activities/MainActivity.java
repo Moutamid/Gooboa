@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewSearchIcon = findViewById(R.id.imgSearchIcon);
         progressBarCircular = findViewById(R.id.pb);
         menu = findViewById(R.id.menu);
-Constants.checkApp(MainActivity.this);
+        Constants.checkApp(MainActivity.this);
         //This code 144-153 is used to set up the media player to play new order pop up souunf
         mediaPlayer = MediaPlayer.create(this, R.raw.new_order);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -174,7 +174,7 @@ Constants.checkApp(MainActivity.this);
         //This code 164-166 is getting today's date and setting it to textView of date
         String cDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         selectedDate = cDate;
-        textViewSelectedDate.setText("Today’s date " +cDate);
+        textViewSelectedDate.setText("Today’s date " + cDate);
 
         //This code 169-174 is used to implement search icon click function to display date picker pop up dialog to display orders on selected date..
         imageViewSearchIcon.setOnClickListener(new View.OnClickListener() {
@@ -377,6 +377,7 @@ Constants.checkApp(MainActivity.this);
                 String dateCreated = jsonObject.getString("date_created");
                 String dateModified = jsonObject.getString("date_modified");
                 String payment_method = jsonObject.getString("payment_method");
+                Log.d("values", jsonObject + "    00");
 
                 Log.e("date_created", dateCreated);
                 // Parse other fields as needed
@@ -394,6 +395,7 @@ Constants.checkApp(MainActivity.this);
                 String state = billingObject.getString("state");
                 String postcode = billingObject.getString("postcode");
                 String phone = billingObject.getString("phone");
+                Log.d("values", billingObject + "    0");
 
                 Log.e("billingFirstName", firstName);
                 Log.e("postcode", postcode);
@@ -411,6 +413,7 @@ Constants.checkApp(MainActivity.this);
                 String shippingPhone = shippingObject.getString("phone");
                 Log.e("shippingFirstName", shippingFirstName);
                 Log.e("shippingLastName", shippingLastName);
+                Log.d("values", shippingObject + "    1");
 
                 // Parsing meta_data array
                 JSONArray metaDataArray = jsonObject.getJSONArray("meta_data");
@@ -420,6 +423,7 @@ Constants.checkApp(MainActivity.this);
                     String metaDataKey = metaDataObject.getString("key");
                     String metaDataValue = metaDataObject.getString("value");
                     metaDataList.add(new MetaDataModelClass(metaDataKey, metaDataValue));
+                    Log.d("values", metaDataObject + "    2");
                 }
                 // Parsing line_items array
                 List<ProductModelClass> productsList = new ArrayList<>();
@@ -430,6 +434,7 @@ Constants.checkApp(MainActivity.this);
                     String quantity = lineItemObject.getString("quantity");
                     int productId = lineItemObject.getInt("product_id");
                     double subtotal = lineItemObject.getDouble("subtotal");
+                    Log.d("valuessssss", lineItemObject.getInt("product_id") + "    3");
 
                     List<MetaDataModelClass> extraData = new ArrayList<>();
                     JSONArray lineItemMetaArray = lineItemObject.getJSONArray("meta_data");
@@ -548,7 +553,6 @@ Constants.checkApp(MainActivity.this);
         tvDateCreated.setText(arr2[2] + "/" + arr2[1] + "/" + arr2[0] + ", " + arr[1]);
         tvTimeMeta.setText("Time: " + model.getMetaDataList().get(3).getValue() + ", Ora: " + model.getMetaDataList().get(4).getValue());
         tvtotalCurrency.setText("Total: " + model.getTotal() + " " + model.getCurrency());
-
         btnPreview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -605,7 +609,7 @@ Constants.checkApp(MainActivity.this);
                 //HttpRequest java class executePost() method is called to change order status on server through HttpURLConnection class..
                 response = HttpRequest.executePost(MainActivity.domain, MainActivity.consumerKey, MainActivity.consumerSecret, orderId, status);
             } catch (Exception e) {
-                Log.d("Exception", "error" +e.getMessage());
+                Log.d("Exception", "error" + e.getMessage());
             }
             return response;
         }
@@ -677,17 +681,16 @@ Constants.checkApp(MainActivity.this);
             String[] arr = order.getDateCreated().split("T");
             holder.tvDate.setText(arr[1]);
 //            holder.tvDate.setText(order.getMetaDataList().get(4).getValue());
-
             if (order.getPaymentMethod().equals("cod")) {
                 holder.tvPayMethod.setText("Cash");
             } else {
                 holder.tvPayMethod.setText("Card");
             }
             holder.tvtotalCurrency.setText(order.getTotal() + " " + order.getCurrency());
-
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v)
+                {
                     modelClass = order;
                     Intent intent = new Intent(getApplicationContext(), OrderDetailsActivity.class);
                     intent.putExtra("key", "view");

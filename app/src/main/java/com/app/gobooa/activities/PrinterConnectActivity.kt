@@ -11,6 +11,7 @@ import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,9 @@ import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
+import com.app.gobooa.activities.utils.Constants
+import com.app.gobooa.activities.utils.DeviceModel
+import com.fxn.stash.Stash
 import com.mazenrashed.printooth.Printooth
 import com.mazenrashed.printooth.Printooth.hasPairedPrinter
 import com.mazenrashed.printooth.Printooth.printer
@@ -70,14 +74,19 @@ class PrinterConnectActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.app.gobooa.R.layout.activity_printer_connect)
-         val cDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
+        val cDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
         selectedDate = cDate
         findViewById<TextView>(com.app.gobooa.R.id.tvDate).setText("Today’s date $cDate")
         findViewById<ImageView>(com.app.gobooa.R.id.imgBack).setOnClickListener(View.OnClickListener {
             startActivity(Intent(this@PrinterConnectActivity, MainActivity::class.java))
             finishAffinity()
         })
-        findViewById<Button>(com.app.gobooa.R.id.btn_accept).setOnClickListener(View.OnClickListener { requestBlePermissions(this@PrinterConnectActivity, 1) })
+        findViewById<Button>(com.app.gobooa.R.id.btn_accept).setOnClickListener(View.OnClickListener {
+            requestBlePermissions(
+                this@PrinterConnectActivity,
+                1
+            )
+        })
         findViewById<Button>(com.app.gobooa.R.id.deny).setOnClickListener(View.OnClickListener { onBackPressed() })
         findViewById<Button>(com.app.gobooa.R.id.add_printer).setOnClickListener(View.OnClickListener {
             if (BluetoothAdapter.getDefaultAdapter().isEnabled) {
@@ -97,8 +106,7 @@ class PrinterConnectActivity : AppCompatActivity() {
         if (!BluetoothAdapter.getDefaultAdapter().isEnabled) {
             findViewById<CardView>(com.app.gobooa.R.id.permission_bluetooth).visibility =
                 View.VISIBLE;
-        }    else
-        {
+        } else {
             setup()
             findViewById<CardView>(com.app.gobooa.R.id.permission_bluetooth).visibility =
                 View.GONE;
@@ -113,13 +121,13 @@ class PrinterConnectActivity : AppCompatActivity() {
         if (!BluetoothAdapter.getDefaultAdapter().isEnabled) {
             findViewById<CardView>(com.app.gobooa.R.id.permission_bluetooth).visibility =
                 View.VISIBLE;
-        }    else
-        {
+        } else {
             setup()
             findViewById<CardView>(com.app.gobooa.R.id.permission_bluetooth).visibility =
                 View.GONE;
 
-        }}
+        }
+    }
 
     private fun setup() {
         initViews()
@@ -139,6 +147,18 @@ class PrinterConnectActivity : AppCompatActivity() {
         bluetooth.setDiscoveryCallback(object : DiscoveryCallback {
             override fun onDiscoveryStarted() {
                 devices.clear()
+                val resturantModelArrayList: java.util.ArrayList<String> =
+                    Stash.getArrayList<String>(
+                        Constants.LIST,
+                        DeviceModel::class.java
+                    )
+
+                Toast.makeText(
+                    this@PrinterConnectActivity,
+                    resturantModelArrayList.size,
+                    Toast.LENGTH_SHORT
+                ).show()
+
                 devices.addAll(bluetooth.pairedDevices)
                 adapter.notifyDataSetChanged()
             }
@@ -210,7 +230,6 @@ class PrinterConnectActivity : AppCompatActivity() {
         super.onStart()
 
 
-
     }
 
     override fun onStop() {
@@ -230,8 +249,8 @@ class PrinterConnectActivity : AppCompatActivity() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             return LayoutInflater.from(context)
                 .inflate(R.layout.bluetooth_device_row, parent, false).apply {
-                    findViewById<TextView>(R.id.name).text =
-                        if (devices[position].name.isNullOrEmpty()) devices[position].address else devices[position].name
+
+                  findViewById<TextView>(R.id.name).text = devices[position].name
                     findViewById<TextView>(R.id.pairStatus).visibility =
                         if (devices[position].bondState != BluetoothDevice.BOND_NONE) View.VISIBLE else View.INVISIBLE
                     findViewById<TextView>(R.id.pairStatus).text =
@@ -245,6 +264,7 @@ class PrinterConnectActivity : AppCompatActivity() {
                 }
         }
     }
+
     fun requestBlePermissions(activity: Activity?, requestCode: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ActivityCompat.requestPermissions(
             activity!!, ANDROID_12_BLE_PERMISSIONS, requestCode

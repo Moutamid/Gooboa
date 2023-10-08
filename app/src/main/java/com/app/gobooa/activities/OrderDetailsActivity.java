@@ -79,6 +79,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
     //This key variable is used to check whether user comes through clicking
     //on order from orders list screen or comes from clicking on order preview from new order pop up..
     String key = "";
+    String payment_method;
     Printing printing;
 
     @Override
@@ -105,6 +106,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         recyclerViewProductsList.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
         recyclerViewProductsList.setLayoutManager(gridLayoutManager);
+
         if (printing != null) {
             printing.setPrintingCallback(this);
         }
@@ -167,6 +169,11 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         recyclerViewProductsList.setAdapter(null);
         EventsListAdapter adapter = new EventsListAdapter(OrderDetailsActivity.this, MainActivity.modelClass.getLineItemsList());
         recyclerViewProductsList.setAdapter(adapter);
+        if (MainActivity.modelClass.getPaymentMethod().equals("cod")) {
+            payment_method = "Cash";
+        } else {
+            payment_method = "Card";
+        }
 
         //This 143-150 is checking whether user is coming by cliking on order from orders list of coming from clicking on
         //order preview. If user is coming from order preview then simply hide print button and order status widgets...
@@ -264,13 +271,15 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
-                            .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
+                            .setNewLinesAfter(1)
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("Str. Castanilor, Lupeni")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                            .setNewLinesAfter(1)
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("123456789")
@@ -280,7 +289,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setNewLinesAfter(1)
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("------------------------------------------------")
+                            .setText("--------------------------")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setNewLinesAfter(1)
@@ -292,26 +301,60 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setNewLinesAfter(1)
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("------------------------------------------------")
+                            .setText("---------------------------")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setNewLinesAfter(1)
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Product")
+                            .setText("Description")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("quantity")
+                            .setText("Price")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setNewLinesAfter(1)
+                            .build());
+
+                    for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++) {
+                        String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
+                        String finalName2 = finalName.replaceAll("</span>", "");
+                        printables.add(new TextPrintable.Builder()
+                                .setText(finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getQty())
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                                .build());
+                        printables.add(new TextPrintable.Builder()
+                                .setText(finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getSubTotal())
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                                .setNewLinesAfter(1)
+                                .build());
+
+                    }
+                    printables.add(new TextPrintable.Builder()
+                            .setText("--------------------------")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setNewLinesAfter(1)
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText("Total")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                            .build());
+                    printables.add(new TextPrintable.Builder()
+                            .setText(payment_method)
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
                             .setNewLinesAfter(1)
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
+                            .setText("---------------------------")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setNewLinesAfter(1)
                             .build());
                     printing.print(printables);
@@ -393,8 +436,8 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
             final ProductModelClass product = muploadList.get(position);
             String finalName = product.getName().replaceAll("<span>", "");
             String finalName2 = finalName.replaceAll("</span>", "");
-            holder.tvProduct.setText(finalName2);
-            holder.tvQty.setText(product.getQty() + "");
+            holder.tvProduct.setText(finalName2 + " - " + product.getQty());
+            holder.tvQty.setText(MainActivity.modelClass.getLineItemsList().get(position).getSubTotal() + "");
 
             EventsListAdapter2 adapter2 = new EventsListAdapter2(OrderDetailsActivity.this, product.getExtraData());
             holder.recyclerView.setAdapter(adapter2);
@@ -529,96 +572,5 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
 
     }
 
-    private void askPermission(String permissionString) {
-        Dexter.withContext(OrderDetailsActivity.this)
-                .withPermission(permissionString)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                        if (!Printooth.INSTANCE.hasPairedPrinter()) {
-                            startActivityForResult(new Intent(OrderDetailsActivity.this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
-                        } else {
-                            printing = Printooth.INSTANCE.printer();
-                            ArrayList<Printable> printables = new ArrayList<>();
-                            printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("CUPTORUL CU PIZZA")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                    .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
-                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_LARGE())
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("Str. Castanilor, Lupeni")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("123456789")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-                                    .setNewLinesAfter(1)
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("------------------------------------------------")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                    .setNewLinesAfter(1)
-
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("Receipt")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                    .setNewLinesAfter(1)
-
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("------------------------------------------------")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                                    .setNewLinesAfter(1)
-
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("Product")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText("quantity")
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                                    .setNewLinesAfter(1)
-
-                                    .build());
-                            printables.add(new TextPrintable.Builder()
-                                    .setText(MainActivity.modelClass.getLineItemsList().get(0).getName().replaceAll("</span>", ""))
-                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                                    .setNewLinesAfter(1)
-                                    .build());
-                            printing.print(printables);
-                            printing.setPrintingCallback(OrderDetailsActivity.this);
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse
-                                                           permissionDeniedResponse) {
-
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest
-                                                                           permissionRequest, PermissionToken permissionToken) {
-                        permissionToken.continuePermissionRequest();
-                    }
-                }).
-
-                check();
-    }
 
 }
