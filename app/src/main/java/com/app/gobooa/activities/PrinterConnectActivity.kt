@@ -20,6 +20,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
@@ -70,6 +71,20 @@ class PrinterConnectActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
+    private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            //granted
+        }else{
+            //deny
+        }
+    }
+
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.d("test006", "${it.key} = ${it.value}")
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +127,16 @@ class PrinterConnectActivity : AppCompatActivity() {
                 View.GONE;
 
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestMultiplePermissions.launch(arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT))
+        }
+        else{
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            requestBluetooth.launch(enableBtIntent)
+        }
     }
 
     override fun onResume() {
@@ -153,11 +178,11 @@ class PrinterConnectActivity : AppCompatActivity() {
                         DeviceModel::class.java
                     )
 
-                Toast.makeText(
-                    this@PrinterConnectActivity,
-                    resturantModelArrayList.size,
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    this@PrinterConnectActivity,
+//                    resturantModelArrayList.size,
+//                    Toast.LENGTH_SHORT
+//                ).show()
 
                 devices.addAll(bluetooth.pairedDevices)
                 adapter.notifyDataSetChanged()
@@ -212,14 +237,15 @@ class PrinterConnectActivity : AppCompatActivity() {
         printers.setOnItemClickListener { _, _, i, _ ->
             Toast.makeText(this@PrinterConnectActivity, "Device Paired", Toast.LENGTH_SHORT).show()
             val device = devices[i]
-            if (device.bondState == BluetoothDevice.BOND_BONDED) {
-                Printooth.setPrinter(device.name, device.address)
-                setResult(Activity.RESULT_OK)
-                this@PrinterConnectActivity.finish()
-            } else if (device.bondState == BluetoothDevice.BOND_NONE)
-                bluetooth.pair(devices[i])
-            adapter.notifyDataSetChanged()
-        }
+                if (device.bondState == BluetoothDevice.BOND_BONDED) {
+                    Printooth.setPrinter(device.name, device.address)
+                    setResult(Activity.RESULT_OK)
+                    this@PrinterConnectActivity.finish()
+                } else if (device.bondState == BluetoothDevice.BOND_NONE)
+                    bluetooth.pair(devices[i])
+                adapter.notifyDataSetChanged()
+            }
+//        }
     }
 
     private fun initViews() {
@@ -250,18 +276,19 @@ class PrinterConnectActivity : AppCompatActivity() {
             return LayoutInflater.from(context)
                 .inflate(R.layout.bluetooth_device_row, parent, false).apply {
 
-                  findViewById<TextView>(R.id.name).text = devices[position].name
-                    findViewById<TextView>(R.id.pairStatus).visibility =
-                        if (devices[position].bondState != BluetoothDevice.BOND_NONE) View.VISIBLE else View.INVISIBLE
-                    findViewById<TextView>(R.id.pairStatus).text =
-                        when (devices[position].bondState) {
-                            BluetoothDevice.BOND_BONDED -> "Paired"
-                            BluetoothDevice.BOND_BONDING -> "Pairing.."
-                            else -> ""
-                        }
-                    findViewById<ImageView>(R.id.pairedPrinter).visibility =
-                        if (Printooth.getPairedPrinter()?.address == devices[position].address) View.VISIBLE else View.GONE
-                }
+                      findViewById<TextView>(R.id.name).text = devices[position].name
+                      findViewById<TextView>(R.id.pairStatus).visibility =
+                          if (devices[position].bondState != BluetoothDevice.BOND_NONE) View.VISIBLE else View.INVISIBLE
+                      findViewById<TextView>(R.id.pairStatus).text =
+                          when (devices[position].bondState) {
+                              BluetoothDevice.BOND_BONDED -> "Paired"
+                              BluetoothDevice.BOND_BONDING -> "Pairing.."
+                              else -> ""
+                          }
+                      findViewById<ImageView>(R.id.pairedPrinter).visibility =
+                          if (Printooth.getPairedPrinter()?.address == devices[position].address) View.VISIBLE else View.GONE
+                  }
+//                }
         }
     }
 
