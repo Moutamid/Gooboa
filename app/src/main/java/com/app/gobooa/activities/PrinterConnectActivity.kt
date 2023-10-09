@@ -172,11 +172,7 @@ class PrinterConnectActivity : AppCompatActivity() {
         bluetooth.setDiscoveryCallback(object : DiscoveryCallback {
             override fun onDiscoveryStarted() {
                 devices.clear()
-                val resturantModelArrayList: java.util.ArrayList<String> =
-                    Stash.getArrayList<String>(
-                        Constants.LIST,
-                        DeviceModel::class.java
-                    )
+
 
 //                Toast.makeText(
 //                    this@PrinterConnectActivity,

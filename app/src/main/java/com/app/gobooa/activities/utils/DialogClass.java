@@ -1,69 +1,50 @@
-package com.app.gobooa.activities;
+package com.app.gobooa.activities.utils;
 
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.gobooa.R;
+import com.app.gobooa.activities.MainActivity;
+import com.app.gobooa.activities.PrinterConnectActivity;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.mazenrashed.printooth.Printooth;
 import com.mazenrashed.printooth.data.printable.ImagePrintable;
 import com.mazenrashed.printooth.data.printable.Printable;
-import com.mazenrashed.printooth.data.printable.RawPrintable;
-import com.mazenrashed.printooth.data.printable.TextPrintable;
-import com.mazenrashed.printooth.data.printer.DefaultPrinter;
 import com.mazenrashed.printooth.ui.ScanningActivity;
 import com.mazenrashed.printooth.utilities.Printing;
 import com.mazenrashed.printooth.utilities.PrintingCallback;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-//This class/activity file is used to display details of order when user clicks on any order from list or when user clicks
-// on order preview. The same screen/activity used for both purposes. We can just differentiate if user comes through clicking
-// order from list or comes from order preview..
-public class PreviewActivity extends BaseActivity implements PrintingCallback {
 
+public class DialogClass extends Dialog implements PrintingCallback {
+
+    public Activity c;
     RecyclerView recyclerViewProductsList;
     String payment_method;
     Printing printing;
@@ -71,9 +52,17 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
     LinearLayout layout;
     TextView buttonPrint;
 
+    public DialogClass(Activity a) {
+        super(a);
+        this.c = a;
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         setContentView(R.layout.activity_preview);
 
 
@@ -83,39 +72,40 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
 
         recyclerViewProductsList = findViewById(R.id.recyclerView);
         recyclerViewProductsList.setHasFixedSize(true);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(c, 1);
         recyclerViewProductsList.setLayoutManager(gridLayoutManager);
         if (printing != null) {
             printing.setPrintingCallback(this);
         }
 
         recyclerViewProductsList.setAdapter(null);
-        EventsListAdapter adapter = new EventsListAdapter(PreviewActivity.this, MainActivity.modelClass.getLineItemsList());
+        EventsListAdapter adapter = new EventsListAdapter(c, MainActivity.modelClass.getLineItemsList());
         recyclerViewProductsList.setAdapter(adapter);
         if (MainActivity.modelClass.getPaymentMethod().equals("cod")) {
             payment_method = "Cash";
         } else {
             payment_method = "Card";
         }
-    total.setText(MainActivity.modelClass.getTotal() + "\n" + payment_method);
+        total.setText(MainActivity.modelClass.getTotal() + "\n" + payment_method);
 
         buttonPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!Printooth.INSTANCE.hasPairedPrinter()) {
-                    startActivity(new Intent(PreviewActivity.this, PrinterConnectActivity.class));
+                  c.startActivity(new Intent(c, PrinterConnectActivity.class));
                 } else {
                     Bitmap bitmap = screenShot(layout);
                     ArrayList<Printable> printables = new ArrayList<>();
                     printing = Printooth.INSTANCE.printer();
                     printables.add(new ImagePrintable.Builder(bitmap).build());
                     printing.print(printables);
-                    printing.setPrintingCallback(PreviewActivity.this);
+                    printing.setPrintingCallback((PrintingCallback) c);
+                    dismiss();
+
                 }
             }
         });
     }
-
     public class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.ImageViewHolder> {
         private Context mcontext;
         private List<ProductModelClass> muploadList;
@@ -140,7 +130,7 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
             holder.tvProduct.setText(finalName2 + " - " + product.getQty());
             holder.tvQty.setText(MainActivity.modelClass.getLineItemsList().get(position).getSubTotal() + "");
 
-            EventsListAdapter2 adapter2 = new EventsListAdapter2(PreviewActivity.this, product.getExtraData());
+            EventsListAdapter2 adapter2 = new EventsListAdapter2(c, product.getExtraData());
             holder.recyclerView.setAdapter(adapter2);
         }
 
@@ -163,7 +153,7 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
                 recyclerView = itemView.findViewById(R.id.recyclerView);
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setNestedScrollingEnabled(false);
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(c, 1);
                 recyclerView.setLayoutManager(gridLayoutManager);
 
             }
@@ -180,13 +170,13 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
         }
 
         @Override
-        public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public EventsListAdapter2.ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(mcontext).inflate(R.layout.products_list_layout2, parent, false);
-            return (new ImageViewHolder(v));
+            return (new EventsListAdapter2.ImageViewHolder(v));
         }
 
         @Override
-        public void onBindViewHolder(final ImageViewHolder holder, @SuppressLint("RecyclerView") final int position) {
+        public void onBindViewHolder(final EventsListAdapter2.ImageViewHolder holder, @SuppressLint("RecyclerView") final int position) {
 
             final MetaDataModelClass product = muploadList.get(position);
             holder.tvProduct.setText("-" + product.getKey() + ": " + product.getValue());
@@ -218,21 +208,6 @@ public class PreviewActivity extends BaseActivity implements PrintingCallback {
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK)
-            try {
-                initprinting();
-            } catch (Exception e) {
-                Log.d("Exception", e.getMessage());
-            }
-    }
-
-    private void initprinting() {
-        if (!Printooth.INSTANCE.hasPairedPrinter())
-            printing = Printooth.INSTANCE.printer();
-    }
 
     @Override
     public void connectingWithPrinter() {
