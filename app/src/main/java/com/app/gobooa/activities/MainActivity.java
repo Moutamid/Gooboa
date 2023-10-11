@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         //This code 164-166 is getting today's date and setting it to textView of date
         String cDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         selectedDate = cDate;
-        textViewSelectedDate.setText("Today’s date " + cDate);
+        textViewSelectedDate.setText( cDate);
 
         //This code 169-174 is used to implement search icon click function to display date picker pop up dialog to display orders on selected date..
         imageViewSearchIcon.setOnClickListener(new View.OnClickListener() {

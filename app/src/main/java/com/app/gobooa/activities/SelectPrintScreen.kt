@@ -14,9 +14,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.app.gobooa.activities.utils.Constants
@@ -27,7 +29,6 @@ import com.mazenrashed.printooth.R
 import com.mazenrashed.printooth.data.DiscoveryCallback
 import com.mazenrashed.printooth.utilities.Bluetooth
 import kotlinx.android.synthetic.main.activity_printer_connect.printers
-import kotlinx.android.synthetic.main.activity_select_print_screen.refreshLayout
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -58,20 +59,25 @@ class SelectPrintScreen : AppCompatActivity() {
         setContentView(com.app.gobooa.R.layout.activity_select_print_screen)
         val cDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
         selectedDate = cDate
-        Toast.makeText(this@SelectPrintScreen, "Please wait, App is scanning for bluetooth device", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this@SelectPrintScreen,
+            "Please wait, App is scanning for bluetooth device",
+            Toast.LENGTH_SHORT
+        ).show()
 
-        findViewById<TextView>(com.app.gobooa.R.id.tvDate).setText("Today’s date $cDate")
+        findViewById<TextView>(com.app.gobooa.R.id.tvDate).setText(cDate)
         findViewById<ImageView>(com.app.gobooa.R.id.imgBack).setOnClickListener(View.OnClickListener {
             startActivity(Intent(this@SelectPrintScreen, PrinterConnectActivity::class.java))
-            finishAffinity()
+            finish()
         })
         findViewById<ImageView>(com.app.gobooa.R.id.refresh).setOnClickListener(View.OnClickListener {
-          setup()
+            bluetooth = Bluetooth(this)
+            adapter = BluetoothDevicesAdapter(this)
+            setup()
         })
         bluetooth = Bluetooth(this)
         adapter = BluetoothDevicesAdapter(this)
         setup()
-
 
 
     }
@@ -103,10 +109,22 @@ class SelectPrintScreen : AppCompatActivity() {
             }
 
             override fun onDeviceFound(device: BluetoothDevice) {
-                if (!devices.contains(device)) {
-                    devices.add(device)
-                    adapter.notifyDataSetChanged()
+//                if (!devices.contains(device)) {
+                devices.add(device)
+                if (devices.size > 0) {
+                    printers.visibility = View.VISIBLE;
+                    findViewById<TextView>(com.app.gobooa.R.id.no_device).visibility = View.GONE
+                    findViewById<ProgressBar>(com.app.gobooa.R.id.progress_bar).visibility =
+                        View.GONE
+
+                } else {
+                    findViewById<TextView>(com.app.gobooa.R.id.no_device).visibility = View.VISIBLE
+                    findViewById<ProgressBar>(com.app.gobooa.R.id.progress_bar).visibility = View.GONE
+                    printers.visibility = View.GONE;
+
                 }
+                adapter.notifyDataSetChanged()
+//                }
             }
 
             override fun onDevicePaired(device: BluetoothDevice) {
@@ -139,52 +157,51 @@ class SelectPrintScreen : AppCompatActivity() {
     }
 
     private fun initListeners() {
-        refreshLayout.setOnRefreshListener {
-            refreshLayout.isRefreshing = false
-            bluetooth.startScanning()
-        }
+//        refreshLayout.setOnRefreshListener {
+//            refreshLayout.isRefreshing = false
+//            bluetooth.startScanning()
+//        }
         printers.setOnItemClickListener { _, _, i, _ ->
             val device = devices[i]
-            if (device.bondState == BluetoothDevice.BOND_BONDED) {
-                Printooth.setPrinter(device.name, device.address)
-                setResult(Activity.RESULT_OK)
-                this@SelectPrintScreen.finish()
-            } else if (device.bondState == BluetoothDevice.BOND_NONE)
-            {val layoutInflater = LayoutInflater.from(this)
-            val promptsView: View =
-                layoutInflater.inflate(com.app.gobooa.R.layout.add_printer_dailogue, null)
-            val alertDialogBuilder = AlertDialog.Builder(this)
-            alertDialogBuilder.setView(promptsView)
-            alertDialogBuilder.setCancelable(true)
-            val alertDialog: AlertDialog = alertDialogBuilder.create()
-            alertDialog.show()
-            alertDialog.findViewById<TextView>(com.app.gobooa.R.id.name).setText(devices[i].name)
-            alertDialog.findViewById<TextView>(com.app.gobooa.R.id.address).setText(devices[i].address)
+            if (device.bondState == BluetoothDevice.BOND_NONE) {
+                val layoutInflater = LayoutInflater.from(this)
+                val promptsView: View =
+                    layoutInflater.inflate(com.app.gobooa.R.layout.add_printer_dailogue, null)
+                val alertDialogBuilder = AlertDialog.Builder(this)
+                alertDialogBuilder.setView(promptsView)
+                alertDialogBuilder.setCancelable(true)
+                val alertDialog: AlertDialog = alertDialogBuilder.create()
+                alertDialog.show()
+                alertDialog.findViewById<TextView>(com.app.gobooa.R.id.name)
+                    .setText(devices[i].name)
+                alertDialog.findViewById<TextView>(com.app.gobooa.R.id.address)
+                    .setText(devices[i].address)
                 alertDialog.findViewById<Button>(com.app.gobooa.R.id.add_printer)
-                .setOnClickListener(View.OnClickListener {
-                    bluetooth.pair(devices[i])
-                    adapter.notifyDataSetChanged()
-                    val intent = Intent(this@SelectPrintScreen, AddPrinterActivity::class.java)
-                    intent.putExtra("name", devices[i].name)
-                    val resturantModelArrayList: java.util.ArrayList<String> =
-                        Stash.getArrayList<String>(
-                            Constants.LIST,
-                            DeviceModel::class.java
-                        )
-                    resturantModelArrayList.add(devices[i].name)
-                    Stash.put(Constants.LIST, resturantModelArrayList)
+                    .setOnClickListener(View.OnClickListener {
+                        bluetooth.pair(devices[i])
+                        adapter.notifyDataSetChanged()
+                        val resturantModelArrayList: java.util.ArrayList<DeviceModel> =
+                            Stash.getArrayList<DeviceModel>(
+                                Constants.LIST,
+                                DeviceModel::class.java
+                            )
+                        val deviceModel = DeviceModel()
+                        deviceModel.name = devices[i].name
+                        deviceModel.address = devices[i].address
+                        resturantModelArrayList.add(deviceModel)
+                        Stash.put(Constants.LIST, resturantModelArrayList)
+                        val intent = Intent(this@SelectPrintScreen, AddPrinterActivity::class.java)
+                        intent.putExtra("name", devices[i].name)
+                        intent.putExtra("address", devices[i].address)
+                        alertDialog.dismiss()
+                        startActivity(intent)
+                        finish()
+                    })
+                alertDialog.findViewById<ImageView>(com.app.gobooa.R.id.imgBack).setOnClickListener(
+                    View.OnClickListener {
+                        alertDialog.dismiss()
 
-                    intent.putExtra("address", devices[i].address)
-                    alertDialog.dismiss()
-                    startActivity(intent)
-                    finish()
-
-                })
-            alertDialog.findViewById<ImageView>(com.app.gobooa.R.id.imgBack).setOnClickListener(
-                View.OnClickListener {
-                    alertDialog.dismiss()
-
-               })
+                    })
 //            val cdd = AddPrinterDialogClass(this@SelectPrintScreen, bluetooth,devices, i, adapter, devices[i].name, devices[i].address)
 //            cdd.show()
             }

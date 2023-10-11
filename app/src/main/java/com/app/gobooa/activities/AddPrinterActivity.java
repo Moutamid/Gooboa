@@ -40,7 +40,7 @@ public class AddPrinterActivity extends AppCompatActivity {
         address.setText(address_str);
         String cDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         selectedDate = cDate;
-        textViewSelectedDate.setText("Today’s date " + cDate);
+        textViewSelectedDate.setText(cDate);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,10 +49,9 @@ public class AddPrinterActivity extends AppCompatActivity {
         });
         details.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 startActivity(new Intent(AddPrinterActivity.this, PrinterConnectActivity.class));
-                finishAffinity();
+                finish();
             }
         });
     }

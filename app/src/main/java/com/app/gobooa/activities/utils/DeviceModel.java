@@ -2,5 +2,8 @@ package com.app.gobooa.activities.utils;
 
 public class DeviceModel {
 
-    String name;
+    public String name, address;
+
+    public DeviceModel() {
+    }
 }
