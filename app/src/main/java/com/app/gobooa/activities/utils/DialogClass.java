@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.gobooa.R;
 import com.app.gobooa.activities.MainActivity;
-import com.app.gobooa.activities.PrinterConnectActivity;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
 import com.mazenrashed.printooth.Printooth;

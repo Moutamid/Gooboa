@@ -25,6 +25,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="31">
+        <activity android:name=".activities.utils.PrinterConnectActivity"
+            android:exported="false"
+            />
         <activity
             android:name=".activities.SelectPrintScreen"
             android:exported="false" />

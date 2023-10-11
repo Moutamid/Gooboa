@@ -3,6 +3,7 @@ package com.app.gobooa.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.app.gobooa.R;
@@ -20,18 +21,19 @@ public class SplashActivity extends AppCompatActivity {
         //This code sleep/pause screen for 3 seconds then move to next screen
         Thread obj = new Thread() {
             public void run() {
-                try{
+                try {
                     sleep(SPLASH_TIME_OUT);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                }finally {
+                } finally {
                     Intent i = new Intent(SplashActivity.this, SignInActivity.class);
                     startActivity(i);
-                    overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     finish();
                 }
             }
-        };obj.start();
+        };
+        obj.start();
 
     }
 }

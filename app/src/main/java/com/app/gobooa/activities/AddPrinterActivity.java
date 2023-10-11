@@ -13,9 +13,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.gobooa.R;
+import com.app.gobooa.activities.utils.Constants;
+import com.app.gobooa.activities.utils.DeviceModel;
+import com.app.gobooa.activities.utils.PrinterConnectActivity;
+import com.fxn.stash.Stash;
 
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
@@ -41,6 +46,9 @@ public class AddPrinterActivity extends AppCompatActivity {
         String cDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         selectedDate = cDate;
         textViewSelectedDate.setText(cDate);
+        ArrayList<DeviceModel> resturantModels = Stash.getArrayList(Constants.LIST, DeviceModel.class);
+
+
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

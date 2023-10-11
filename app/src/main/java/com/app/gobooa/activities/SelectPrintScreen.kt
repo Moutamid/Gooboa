@@ -6,8 +6,11 @@ import android.app.AlertDialog
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +21,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.app.gobooa.activities.utils.Constants
 import com.app.gobooa.activities.utils.DeviceModel
+import com.app.gobooa.activities.utils.PrinterConnectActivity
 import com.fxn.stash.Stash
 import com.mazenrashed.printooth.Printooth
 import com.mazenrashed.printooth.R
@@ -52,7 +55,7 @@ class SelectPrintScreen : AppCompatActivity() {
         Manifest.permission.BLUETOOTH_CONNECT,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-
+    var j = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,10 @@ class SelectPrintScreen : AppCompatActivity() {
             finish()
         })
         findViewById<ImageView>(com.app.gobooa.R.id.refresh).setOnClickListener(View.OnClickListener {
+            findViewById<TextView>(com.app.gobooa.R.id.no_device).visibility = View.GONE
+            findViewById<ProgressBar>(com.app.gobooa.R.id.progress_bar).visibility =
+                View.VISIBLE
+
             bluetooth = Bluetooth(this)
             adapter = BluetoothDevicesAdapter(this)
             setup()
@@ -101,7 +108,7 @@ class SelectPrintScreen : AppCompatActivity() {
             override fun onDiscoveryStarted() {
                 devices.clear()
 //                devices.addAll(bluetooth.pairedDevices)
-                adapter.notifyDataSetChanged()
+//                adapter.notifyDataSetChanged()
             }
 
             override fun onDiscoveryFinished() {
@@ -109,8 +116,17 @@ class SelectPrintScreen : AppCompatActivity() {
             }
 
             override fun onDeviceFound(device: BluetoothDevice) {
-//                if (!devices.contains(device)) {
-                devices.add(device)
+                val deviceModelList: java.util.ArrayList<DeviceModel> =
+                    Stash.getArrayList<DeviceModel>(
+                        Constants.LIST,
+                        DeviceModel::class.java
+                    )
+                for (i in deviceModelList.indices) {
+                    Log.d("data", deviceModelList.get(i).name+"  "+device.name)
+                    if (!deviceModelList.get(i).name.contentEquals(device.name)) {
+                            devices.add(device)
+                    }
+                }
                 if (devices.size > 0) {
                     printers.visibility = View.VISIBLE;
                     findViewById<TextView>(com.app.gobooa.R.id.no_device).visibility = View.GONE
@@ -119,7 +135,8 @@ class SelectPrintScreen : AppCompatActivity() {
 
                 } else {
                     findViewById<TextView>(com.app.gobooa.R.id.no_device).visibility = View.VISIBLE
-                    findViewById<ProgressBar>(com.app.gobooa.R.id.progress_bar).visibility = View.GONE
+                    findViewById<ProgressBar>(com.app.gobooa.R.id.progress_bar).visibility =
+                        View.GONE
                     printers.visibility = View.GONE;
 
                 }
@@ -132,7 +149,23 @@ class SelectPrintScreen : AppCompatActivity() {
                 Toast.makeText(this@SelectPrintScreen, "Device Paired", Toast.LENGTH_SHORT).show()
                 adapter.notifyDataSetChanged()
                 setResult(Activity.RESULT_OK)
-                this@SelectPrintScreen.finish()
+//                this@SelectPrintScreen.finish()
+                val deviceModelList: java.util.ArrayList<DeviceModel> =
+                    Stash.getArrayList<DeviceModel>(
+                        Constants.LIST,
+                        DeviceModel::class.java
+                    )
+                val deviceModel = DeviceModel()
+                deviceModel.name = devices[j].name
+                deviceModel.address = devices[j].address
+                deviceModelList.add(deviceModel)
+                Stash.put(Constants.LIST, deviceModelList)
+                val intent = Intent(this@SelectPrintScreen, AddPrinterActivity::class.java)
+                intent.putExtra("name", devices[j].name)
+                intent.putExtra("address", devices[j].address)
+                hideProgressDialog()
+                Printooth.removeCurrentPrinter()
+                startActivity(intent)
             }
 
             override fun onDeviceUnpaired(device: BluetoothDevice) {
@@ -152,6 +185,8 @@ class SelectPrintScreen : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 adapter.notifyDataSetChanged()
+                hideProgressDialog()
+                finish()
             }
         })
     }
@@ -180,22 +215,10 @@ class SelectPrintScreen : AppCompatActivity() {
                     .setOnClickListener(View.OnClickListener {
                         bluetooth.pair(devices[i])
                         adapter.notifyDataSetChanged()
-                        val resturantModelArrayList: java.util.ArrayList<DeviceModel> =
-                            Stash.getArrayList<DeviceModel>(
-                                Constants.LIST,
-                                DeviceModel::class.java
-                            )
-                        val deviceModel = DeviceModel()
-                        deviceModel.name = devices[i].name
-                        deviceModel.address = devices[i].address
-                        resturantModelArrayList.add(deviceModel)
-                        Stash.put(Constants.LIST, resturantModelArrayList)
-                        val intent = Intent(this@SelectPrintScreen, AddPrinterActivity::class.java)
-                        intent.putExtra("name", devices[i].name)
-                        intent.putExtra("address", devices[i].address)
+                        j = i
+
+                        showProgressDialog();
                         alertDialog.dismiss()
-                        startActivity(intent)
-                        finish()
                     })
                 alertDialog.findViewById<ImageView>(com.app.gobooa.R.id.imgBack).setOnClickListener(
                     View.OnClickListener {
@@ -252,5 +275,23 @@ class SelectPrintScreen : AppCompatActivity() {
         }
     }
 
+    var alertDialog: androidx.appcompat.app.AlertDialog? = null
+
+    fun showProgressDialog() {
+        val dailogBuilder = androidx.appcompat.app.AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView: View = inflater.inflate(com.app.gobooa.R.layout.dialog, null)
+        dailogBuilder.setView(dialogView)
+        alertDialog = dailogBuilder.create()
+        alertDialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog!!.setCanceledOnTouchOutside(false)
+        alertDialog!!.show()
+    }
+
+    fun hideProgressDialog() {
+        if (alertDialog != null && alertDialog!!.isShowing) {
+            alertDialog!!.dismiss()
+        }
+    }
 
 }

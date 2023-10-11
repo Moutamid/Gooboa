@@ -113,12 +113,18 @@
         app:cardBackgroundColor="@color/theme_color"
         app:cardCornerRadius="12dp">
 
-        <TextView
-            android:id="@+id/lvNewDevices"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/content_rcv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:layout_margin="25dp" />
+            android:layout_height="match_parent"
+            android:layout_above="@+id/btn"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp" />
 
         <TextView
             android:layout_width="match_parent"

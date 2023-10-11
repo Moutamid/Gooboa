@@ -36,6 +36,7 @@ import com.app.gobooa.R;
 import com.app.gobooa.activities.utils.Constants;
 import com.app.gobooa.activities.utils.DeviceModel;
 import com.app.gobooa.activities.utils.DialogClass;
+import com.app.gobooa.activities.utils.PrinterConnectActivity;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
 import com.fxn.stash.Stash;
@@ -259,9 +260,20 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         buttonPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++) {
+                    String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
+                    String finalName2 = finalName.replaceAll("</span>", "");
+                    Log.d("item_details", finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getQty());
 
+                    Log.d("item_details", MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n");
+
+
+                    for (int j = 0; j < MainActivity.modelClass.getLineItemsList().get(i).getExtraData().size(); j++) {
+                        Log.d("item_details", "-" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ": " + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n");
+                    }
+
+                }
                 if (!Printooth.INSTANCE.hasPairedPrinter()) {
-
                     startActivity(new Intent(OrderDetailsActivity.this, PrinterConnectActivity.class));
                 } else {
                     printing = Printooth.INSTANCE.printer();
@@ -303,14 +315,10 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Description")
+                            .setText("Description           Price\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("Price\n")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                            .build());
+
 
                     for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++) {
                         String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
@@ -318,7 +326,6 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                         printables.add(new TextPrintable.Builder()
                                 .setText(finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getQty())
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                                .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                                 .build());
                         printables.add(new TextPrintable.Builder()
                                 .setText(MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n")
@@ -341,22 +348,21 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Total")
+                            .setText("Total"+"        "+MainActivity.modelClass.getTotal() + " " + payment_method + "\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
                             .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText(MainActivity.modelClass.getTotal() + " " + payment_method + "\n\n\n")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
-                            .build());
-                    printables.add(new TextPrintable.Builder()
-                            .setText("---------------------------\n\n\n")
+                      printables.add(new TextPrintable.Builder()
+                            .setText("---------------------------\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("\n\nVA MULTUMIM !\n\n")
+                            .setText("VA MULTUMIM !\n\n")
+                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .build());  printables.add(new TextPrintable.Builder()
+                            .setText("\n\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());

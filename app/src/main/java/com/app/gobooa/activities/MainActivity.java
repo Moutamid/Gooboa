@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.gobooa.R;
 import com.app.gobooa.activities.utils.Constants;
+import com.app.gobooa.activities.utils.PrinterConnectActivity;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.OrderModelClass;
 import com.app.gobooa.models.ProductModelClass;
