@@ -13,6 +13,7 @@ import android.os.Looper;
 
 import com.mazenrashed.printooth.data.BluetoothCallback;
 import com.mazenrashed.printooth.data.DeviceCallback;
+import com.mazenrashed.printooth.data.DiscoveryCallback;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,8 +23,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import com.mazenrashed.printooth.data.DiscoveryCallback;
 
 public class Bluetooth {
     public static final int REQUEST_ENABLE_BT = 1111;
@@ -66,7 +65,6 @@ public class Bluetooth {
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
                 if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
                     context.unregisterReceiver(pairReceiver);
                     if (discoveryCallback != null) {
@@ -83,7 +81,7 @@ public class Bluetooth {
     };
 
     public void onStop() {
-//        context.unregisterReceiver(bluetoothReceiver);
+        context.unregisterReceiver(bluetoothReceiver);
     }
 
     public void enable() {
@@ -99,6 +97,7 @@ public class Bluetooth {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (action != null && action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
                 if (bluetoothCallback != null) {
                     switch (state) {
@@ -144,6 +143,7 @@ public class Bluetooth {
             if (action != null) {
                 switch (action) {
                     case BluetoothAdapter.ACTION_STATE_CHANGED:
+
                         final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
                         if (state == BluetoothAdapter.STATE_OFF)
                             if (discoveryCallback != null)
@@ -164,7 +164,9 @@ public class Bluetooth {
                     case BluetoothDevice.ACTION_FOUND:
                         final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                         if (discoveryCallback != null)
-                            discoveryCallback.onDeviceFound(device);
+                            if (device != null) {
+                                discoveryCallback.onDeviceFound(device);
+                            }
                         break;
                 }
             }

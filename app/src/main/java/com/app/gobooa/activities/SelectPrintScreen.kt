@@ -121,12 +121,32 @@ class SelectPrintScreen : AppCompatActivity() {
                         Constants.LIST,
                         DeviceModel::class.java
                     )
-                for (i in deviceModelList.indices) {
-                    Log.d("data", deviceModelList.get(i).name+"  "+device.name)
-                    if (!deviceModelList.get(i).name.contentEquals(device.name)) {
+                if (deviceModelList.size > 0) {
+                    for (i in deviceModelList.indices) {
+                        Log.d("data", deviceModelList.get(i).name + "  " + device.name)
+                        if (device.name != null) {
+                            if (!deviceModelList.get(i).name.contentEquals(device.name)) {
+                                devices.add(device)
+                            }
+                        } else if (device.address != null) {
+                            if (!deviceModelList.get(i).address.contentEquals(device.address)) {
+                                devices.add(device)
+                            }
+
+                        }
+
+                    }
+                } else {
+                    if (devices.size > 0) {
+                        if (!devices.contains(device)) {
                             devices.add(device)
+
+                        }
+                    } else {
+                        devices.add(device)
                     }
                 }
+
                 if (devices.size > 0) {
                     printers.visibility = View.VISIBLE;
                     findViewById<TextView>(com.app.gobooa.R.id.no_device).visibility = View.GONE

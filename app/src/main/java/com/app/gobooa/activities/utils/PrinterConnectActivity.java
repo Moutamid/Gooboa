@@ -1,28 +1,22 @@
 package com.app.gobooa.activities.utils;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.gobooa.R;
 import com.app.gobooa.activities.Adapter.PairedDevicesAdapter;
@@ -32,19 +26,15 @@ import com.fxn.stash.Stash;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PrinterConnectActivity extends AppCompatActivity {
 
@@ -79,8 +69,6 @@ public class PrinterConnectActivity extends AppCompatActivity {
         if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             permission_bluetooth.setVisibility(View.GONE);
         }
-
-
         String cDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         selectedDate = cDate;
         textViewSelectedDate.setText(cDate);
@@ -124,65 +112,20 @@ public class PrinterConnectActivity extends AppCompatActivity {
                 }
             }
         });
-        if (resturantModels != null) {
+        if (resturantModels != null)
+        {
+            resturantModels = (ArrayList<DeviceModel>) resturantModels.stream().distinct().collect(Collectors.toList());
+
             no_paired.setVisibility(View.GONE);
             content_rcv.setLayoutManager(new LinearLayoutManager(this));
             pairedDevicesAdapter = new PairedDevicesAdapter(this, resturantModels);
             content_rcv.setAdapter(pairedDevicesAdapter);
-
-
-//        if (devices.size() > 0) {
-//            for (BluetoothDevice device : devices) {
-//                bluetoothDevices.add(device.getAddress());
-//                if (!lvNewDevices.getText().toString().contains(device.getName())) {
-//                    lvNewDevices.append(device.getName() + "\n" + device + "\n\n");
-//                }
-//            }
-//            Stash.put("device", bluetoothDevices);
-//
-
-        } else {
-//
-            Toast.makeText(this, "empty", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
             no_paired.setVisibility(View.VISIBLE);
-//
         }
     }
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_ENABLE_BT) {
-//            is_bluetooth = true;
-//            CheckBluetoothState();
-//            Toast.makeText(this, "Bluetooth in now ON", Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
-
-//    private void CheckBluetoothState() {
-//        Stash.clear("device");
-//        ArrayList<String> bluetoothDevices = new ArrayList<>();
-//
-//        // Listing paired devices
-//        Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
-//
-//        if (devices.size() > 0) {
-//            no_paired.setVisibility(View.GONE);
-//            for (BluetoothDevice device : devices) {
-//                bluetoothDevices.add(device.getAddress());
-//                if (!lvNewDevices.getText().toString().contains(device.getName())) {
-//                    lvNewDevices.append(device.getName() + "\n" + device + "\n\n");
-//                }
-//            }
-//            Stash.put("device", bluetoothDevices);
-//        } else {
-//
-//            no_paired.setVisibility(View.VISIBLE);
-//
-//        }
-//
-//    }
-
 
     @Override
     protected void onResume() {
@@ -205,14 +148,13 @@ public class PrinterConnectActivity extends AppCompatActivity {
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
-// check if all permissions are allowed or granted
                         if (report.areAllPermissionsGranted()) {
-                            permission_bluetooth.setVisibility(View.VISIBLE);
+                            permission_bluetooth.setVisibility(View.GONE);
+                            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
                         }
-
-// check for permanent decline of any permission
                         if (report.isAnyPermissionPermanentlyDenied()) {
-                            Toast.makeText(PrinterConnectActivity.this, "Please turnon bluetooth to move next", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PrinterConnectActivity.this, "Please turn On bluetooth to move next", Toast.LENGTH_SHORT).show();
                         }
                     }
 

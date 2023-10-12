@@ -1,18 +1,12 @@
 package com.app.gobooa.activities;
 
-import static com.mazenrashed.printooth.utilities.Bluetooth.REQUEST_ENABLE_BT;
-
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,26 +20,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.gobooa.R;
-import com.app.gobooa.activities.utils.Constants;
-import com.app.gobooa.activities.utils.DeviceModel;
-import com.app.gobooa.activities.utils.DialogClass;
 import com.app.gobooa.activities.utils.PrinterConnectActivity;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
-import com.fxn.stash.Stash;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.mazenrashed.printooth.Printooth;
 import com.mazenrashed.printooth.data.printable.Printable;
 import com.mazenrashed.printooth.data.printable.RawPrintable;
@@ -75,7 +56,6 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
     RecyclerView recyclerViewProductsList;
     Button buttonPrint;
 
-    //Used to display order status pop up dialog like completed,on-hold or cancelled and user selects one to change order status accordingly..
     AlertDialog alertDialog;
 
     //Used to store order status(on-hold or cancelled) when user provide his/her response to change order status from pop up dialog..
@@ -264,33 +244,30 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                     String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
                     String finalName2 = finalName.replaceAll("</span>", "");
                     Log.d("item_details", finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getQty());
-
                     Log.d("item_details", MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n");
-
-
                     for (int j = 0; j < MainActivity.modelClass.getLineItemsList().get(i).getExtraData().size(); j++) {
                         Log.d("item_details", "-" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ": " + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n");
                     }
-
                 }
                 if (!Printooth.INSTANCE.hasPairedPrinter()) {
                     startActivity(new Intent(OrderDetailsActivity.this, PrinterConnectActivity.class));
                 } else {
                     printing = Printooth.INSTANCE.printer();
                     ArrayList<Printable> printables = new ArrayList<>();
-                    printables.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build());
+
+                    printables.add(new RawPrintable.Builder(new byte[]{27, 33, 0}).build());
                     printables.add(new TextPrintable.Builder()
                             .setText("CUPTORUL CU PIZZA\n")
-                            .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_60())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
-                            .setAlignment(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+
+                            .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("Str. Castanilor, Lupeni\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
-
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("123456789\n")
@@ -315,8 +292,9 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Description           Price\n")
+                            .setText("Description              Price\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                            .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                             .build());
 
 
@@ -326,18 +304,25 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                         printables.add(new TextPrintable.Builder()
                                 .setText(finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getQty())
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                                .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+
+                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
                                 .build());
                         printables.add(new TextPrintable.Builder()
                                 .setText(MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n")
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                                 .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
 
                                 .build());
 
                         for (int j = 0; j < MainActivity.modelClass.getLineItemsList().get(i).getExtraData().size(); j++) {
                             printables.add(new TextPrintable.Builder()
                                     .setText("-" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ": " + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n")
+                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_VERY_SMALL())
+                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
                                     .build());
                         }
 
@@ -348,7 +333,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Total"+"        "+MainActivity.modelClass.getTotal() + " " + payment_method + "\n")
+                            .setText("Total"+"             "+MainActivity.modelClass.getTotal() + " " + payment_method + "\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
                             .build());

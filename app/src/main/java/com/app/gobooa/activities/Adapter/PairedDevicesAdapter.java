@@ -42,7 +42,7 @@ public class PairedDevicesAdapter extends RecyclerView.Adapter<PairedDevicesAdap
     @Override
     public void onBindViewHolder(@NonNull GalleryPhotosViewHolder holder, final int position) {
         DeviceModel categoryNameModel = categoryModelList.get(position);
-
+        holder.setIsRecyclable(false);
         holder.name.setText(categoryNameModel.name);
         holder.address.setText(categoryNameModel.address);
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -36,9 +36,11 @@ open class DefaultPrinter : Printer() {
         val UNDERLINED_MODE_ON: Byte = 1
         val UNDERLINED_MODE_OFF: Byte = 0
         val LINE_SPACING_60: Byte = 60
-        val LINE_SPACING_30: Byte = 30
+        val LINE_SPACING_30: Byte = 20
         val FONT_SIZE_NORMAL: Byte = 0x00
         val FONT_SIZE_LARGE: Byte = 0x10
+        val FONT_SIZE_SMALL: Byte = 0x0a
+        val FONT_SIZE_VERY_SMALL: Byte = 0x07
 
         val CHARCODE_PC437: Byte = 0x00 // USA / Standard Europe
         val CHARCODE_JIS: Byte = 0x01 // Japanese Katakana
