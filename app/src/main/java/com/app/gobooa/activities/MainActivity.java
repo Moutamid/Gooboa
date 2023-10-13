@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         progressBarCircular = findViewById(R.id.pb);
         menu = findViewById(R.id.menu);
         Constants.checkApp(MainActivity.this);
+
         //This code 144-153 is used to set up the media player to play new order pop up souunf
         mediaPlayer = MediaPlayer.create(this, R.raw.new_order);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

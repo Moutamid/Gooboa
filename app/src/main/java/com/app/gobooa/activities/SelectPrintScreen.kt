@@ -184,7 +184,6 @@ class SelectPrintScreen : AppCompatActivity() {
                 intent.putExtra("name", devices[j].name)
                 intent.putExtra("address", devices[j].address)
                 hideProgressDialog()
-                Printooth.removeCurrentPrinter()
                 startActivity(intent)
             }
 
@@ -225,28 +224,31 @@ class SelectPrintScreen : AppCompatActivity() {
                 val alertDialogBuilder = AlertDialog.Builder(this)
                 alertDialogBuilder.setView(promptsView)
                 alertDialogBuilder.setCancelable(true)
-                val alertDialog: AlertDialog = alertDialogBuilder.create()
-                alertDialog.show()
-                alertDialog.findViewById<TextView>(com.app.gobooa.R.id.name)
-                    .setText(devices[i].name)
-                alertDialog.findViewById<TextView>(com.app.gobooa.R.id.address)
-                    .setText(devices[i].address)
-                alertDialog.findViewById<Button>(com.app.gobooa.R.id.add_printer)
-                    .setOnClickListener(View.OnClickListener {
-                        bluetooth.pair(devices[i])
-                        adapter.notifyDataSetChanged()
-                        j = i
+                if (devices[i].name.length > 1) {
+                    val alertDialog: AlertDialog = alertDialogBuilder.create()
+                    alertDialog.show()
+                    alertDialog.findViewById<TextView>(com.app.gobooa.R.id.name)
+                        .setText(devices[i].name)
+                    alertDialog.findViewById<TextView>(com.app.gobooa.R.id.address)
+                        .setText(devices[i].address)
+                    alertDialog.findViewById<Button>(com.app.gobooa.R.id.add_printer)
+                        .setOnClickListener(View.OnClickListener {
+                            bluetooth.pair(devices[i])
+                            adapter.notifyDataSetChanged()
+                            j = i
 
-                        showProgressDialog();
-                        alertDialog.dismiss()
-                    })
-                alertDialog.findViewById<ImageView>(com.app.gobooa.R.id.imgBack).setOnClickListener(
-                    View.OnClickListener {
-                        alertDialog.dismiss()
+                            showProgressDialog();
+                            alertDialog.dismiss()
+                        })
+                    alertDialog.findViewById<ImageView>(com.app.gobooa.R.id.imgBack)
+                        .setOnClickListener(
+                            View.OnClickListener {
+                                alertDialog.dismiss()
 
-                    })
+                            })
 //            val cdd = AddPrinterDialogClass(this@SelectPrintScreen, bluetooth,devices, i, adapter, devices[i].name, devices[i].address)
 //            cdd.show()
+                }
             }
         }
     }
