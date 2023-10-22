@@ -240,10 +240,13 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         buttonPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++) {
+                for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++)
+                {
                     String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
+                    String[] separated = finalName.split("- </span>");
+                    String s = separated[0];
                     String finalName2 = finalName.replaceAll("</span>", "");
-                    Log.d("item_details", finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getQty());
+                    Log.d("item_details", s );
                     Log.d("item_details", MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n");
                     for (int j = 0; j < MainActivity.modelClass.getLineItemsList().get(i).getExtraData().size(); j++) {
                         Log.d("item_details", "-" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ": " + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n");
@@ -257,17 +260,17 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
 
                     printables.add(new RawPrintable.Builder(new byte[]{27, 33, 0}).build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("CUPTORUL CU PIZZA\n")
+                            .setText("CUPTORUL CU PIZZA\n\n")
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Str. Castanilor, Lupeni\n")
+                            .setText("Str. Castanilor, Lupeni\n\n")
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("123456789\n")
+                            .setText("123456789\n\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
@@ -288,7 +291,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Description                  Price\n")
+                            .setText("Description             Price\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                             .build());
@@ -296,9 +299,10 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
 
                     for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++) {
                         String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
-                        String finalName2 = finalName.replaceAll("</span>", "");
+                        String[] separated = finalName.split("- </span>");
+                        String s = separated[0];
                         printables.add(new TextPrintable.Builder()
-                                .setText(finalName2 + "-" + MainActivity.modelClass.getLineItemsList().get(i).getQty())
+                                .setText(s)
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                                 .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
@@ -309,7 +313,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                                 .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
-                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_VERY_SMALL())
+                                .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
 
                                 .build());
 

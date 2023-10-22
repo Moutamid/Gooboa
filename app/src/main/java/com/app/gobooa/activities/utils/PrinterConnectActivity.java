@@ -93,7 +93,12 @@ public class PrinterConnectActivity extends AppCompatActivity {
                     Intent intent = new Intent(PrinterConnectActivity.this, SelectPrintScreen.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(PrinterConnectActivity.this, "Please Turn On Bluetooth to get add printer", Toast.LENGTH_SHORT).show();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        askPermission();
+                    } else {
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    }
                 }
             }
         });
@@ -115,7 +120,6 @@ public class PrinterConnectActivity extends AppCompatActivity {
         if (resturantModels != null)
         {
             resturantModels = (ArrayList<DeviceModel>) resturantModels.stream().distinct().collect(Collectors.toList());
-
             no_paired.setVisibility(View.GONE);
             content_rcv.setLayoutManager(new LinearLayoutManager(this));
             pairedDevicesAdapter = new PairedDevicesAdapter(this, resturantModels);
