@@ -1,13 +1,17 @@
 package com.app.gobooa.activities
 
 import android.Manifest
+import android.Manifest.permission.BLUETOOTH_SCAN
 import android.app.Activity
 import android.app.AlertDialog
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -20,13 +24,20 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.app.gobooa.activities.utils.Constants
 import com.app.gobooa.activities.utils.DeviceModel
 import com.app.gobooa.activities.utils.PrinterConnectActivity
 import com.fxn.stash.Stash
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.mazenrashed.printooth.Printooth
 import com.mazenrashed.printooth.R
 import com.mazenrashed.printooth.data.DiscoveryCallback
@@ -41,6 +52,8 @@ class SelectPrintScreen : AppCompatActivity() {
     private lateinit var bluetooth: Bluetooth
     private var devices = ArrayList<BluetoothDevice>()
     private lateinit var adapter: BluetoothDevicesAdapter
+    var mBluetoothAdapter: BluetoothAdapter? = null
+    private val REQUEST_ENABLE_BT = 0
 
     var selectedDate = ""
 
@@ -67,6 +80,7 @@ class SelectPrintScreen : AppCompatActivity() {
             "Please wait, App is scanning for bluetooth device",
             Toast.LENGTH_SHORT
         ).show()
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
         findViewById<TextView>(com.app.gobooa.R.id.tvDate).setText(cDate)
         findViewById<ImageView>(com.app.gobooa.R.id.imgBack).setOnClickListener(View.OnClickListener {
@@ -93,12 +107,32 @@ class SelectPrintScreen : AppCompatActivity() {
         initViews()
         initListeners()
         initDeviceCallback()
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            askPermission()
+//        } else {
+//            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+//            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+//        }
         runWithPermissions(Permission.ACCESS_FINE_LOCATION) {
             bluetooth.onStart()
             if (!bluetooth.isEnabled)
                 bluetooth.enable()
             Handler().postDelayed({
-                bluetooth.startScanning()
+//
+                if (mBluetoothAdapter?.isEnabled == true) {
+                    bluetooth.startScanning()
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        askPermission()
+                    } else {
+                        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                        startActivityForResult(
+                            enableBtIntent,
+                            REQUEST_ENABLE_BT
+                        )
+                    }
+                }
             }, 1000)
         }
     }
@@ -107,6 +141,8 @@ class SelectPrintScreen : AppCompatActivity() {
         bluetooth.setDiscoveryCallback(object : DiscoveryCallback {
             override fun onDiscoveryStarted() {
                 devices.clear()
+//                Log.d("data", device.toString())
+
 //                devices.addAll(bluetooth.pairedDevices)
 //                adapter.notifyDataSetChanged()
             }
@@ -116,6 +152,8 @@ class SelectPrintScreen : AppCompatActivity() {
             }
 
             override fun onDeviceFound(device: BluetoothDevice) {
+                Log.d("data", device.toString())
+
                 val deviceModelList: java.util.ArrayList<DeviceModel> =
                     Stash.getArrayList<DeviceModel>(
                         Constants.LIST,
@@ -267,7 +305,7 @@ class SelectPrintScreen : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        bluetooth.onStop()
+//        bluetooth.onStop()
     }
 
     companion object {
@@ -316,6 +354,56 @@ class SelectPrintScreen : AppCompatActivity() {
     fun hideProgressDialog() {
         if (alertDialog != null && alertDialog!!.isShowing) {
             alertDialog!!.dismiss()
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    private fun askPermission() {
+        Dexter.withActivity(this)
+            .withPermissions(
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    if (report.areAllPermissionsGranted()) {
+                        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                        startActivityForResult(
+                            enableBtIntent,
+                            REQUEST_ENABLE_BT
+                        )
+
+                    }
+                    if (report.isAnyPermissionPermanentlyDenied) {
+                        Toast.makeText(
+                            this@SelectPrintScreen,
+                            "Please turn On bluetooth to move next",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest>,
+                    permissoonToken: PermissionToken
+                ) {
+                    permissoonToken.continuePermissionRequest()
+                }
+            })
+            .onSameThread()
+            .check()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1) {
+            if (mBluetoothAdapter?.isEnabled == true) {
+                bluetooth.startScanning()
+
+            }
         }
     }
 

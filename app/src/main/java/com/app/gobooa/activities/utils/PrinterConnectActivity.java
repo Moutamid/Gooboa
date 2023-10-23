@@ -65,7 +65,6 @@ public class PrinterConnectActivity extends AppCompatActivity {
         no_paired = (TextView) findViewById(R.id.no_paired);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-
         if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             permission_bluetooth.setVisibility(View.GONE);
         }

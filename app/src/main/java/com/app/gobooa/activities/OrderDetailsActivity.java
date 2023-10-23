@@ -51,7 +51,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
     //Variables and views declaration..
     TextView textViewID, textViewLivrareCollectare, textViewUser, textViewPhone, textViewAddress,
             textViewDateCreated, textViewTimeMeta, textViewStatus, textViewHideStatus;
-    TextView textViewPayMethod, textViewTodayDate;
+    TextView textViewPayMethod, textViewTodayDate, tvdetails;
     ImageView imageViewBackArrow;
     RecyclerView recyclerViewProductsList;
     Button buttonPrint;
@@ -74,6 +74,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
 
         //Views initialization..
         imageViewBackArrow = findViewById(R.id.imgBack);
+        tvdetails = findViewById(R.id.tvDetails);
         textViewTodayDate = findViewById(R.id.tvTodayDate);
         textViewID = findViewById(R.id.tvID);
         textViewLivrareCollectare = findViewById(R.id.tvLivrareCollectare);
@@ -296,32 +297,31 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                             .build());
 
-
                     for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++) {
                         String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
                         String[] separated = finalName.split("- </span>");
                         String s = separated[0];
                         printables.add(new TextPrintable.Builder()
                                 .setText(s)
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_35())
                                 .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                                 .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
                                 .build());
                         printables.add(new TextPrintable.Builder()
-                                .setText(MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n")
-                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
+                                .setText(MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n\n")
+                                .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_35())
                                 .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                                 .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
-
                                 .build());
 
                         for (int j = 0; j < MainActivity.modelClass.getLineItemsList().get(i).getExtraData().size(); j++) {
                             printables.add(new TextPrintable.Builder()
-                                    .setText("-" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ": " + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n")
+                                    .setText(" " + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ":" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n")
                                     .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_VERY_SMALL())
                                     .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+
                                     .build());
                         }
 
