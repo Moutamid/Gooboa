@@ -27,6 +27,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.app.gobooa.activities.utils.Constants
@@ -120,7 +121,7 @@ class SelectPrintScreen : AppCompatActivity() {
                 bluetooth.enable()
             Handler().postDelayed({
 //
-                if (mBluetoothAdapter?.isEnabled == true) {
+                if (isPermissionsGranted(this@SelectPrintScreen)) {
                     bluetooth.startScanning()
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -254,6 +255,7 @@ class SelectPrintScreen : AppCompatActivity() {
 //            bluetooth.startScanning()
 //        }
         printers.setOnItemClickListener { _, _, i, _ ->
+
             val device = devices[i]
             if (device.bondState == BluetoothDevice.BOND_NONE) {
                 val layoutInflater = LayoutInflater.from(this)
@@ -406,5 +408,15 @@ class SelectPrintScreen : AppCompatActivity() {
             }
         }
     }
+    private fun isPermissionsGranted(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
 
 }

@@ -3,6 +3,8 @@ package com.mazenrashed.printooth.ui
 import android.app.Activity
 import android.bluetooth.BluetoothDevice
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -13,6 +15,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.mazenrashed.printooth.Printooth
@@ -20,6 +23,7 @@ import com.mazenrashed.printooth.R
 import com.mazenrashed.printooth.data.DiscoveryCallback
 import com.mazenrashed.printooth.utilities.Bluetooth
 import kotlinx.android.synthetic.main.activity_scanning.*
+import java.util.jar.Manifest
 
 class ScanningActivity : AppCompatActivity() {
     private lateinit var bluetooth: Bluetooth

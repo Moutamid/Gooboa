@@ -27,6 +27,12 @@ import com.app.gobooa.R;
 import com.app.gobooa.activities.utils.PrinterConnectActivity;
 import com.app.gobooa.models.MetaDataModelClass;
 import com.app.gobooa.models.ProductModelClass;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mazenrashed.printooth.Printooth;
 import com.mazenrashed.printooth.data.printable.Printable;
 import com.mazenrashed.printooth.data.printable.RawPrintable;
@@ -66,6 +72,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
     String key = "";
     String payment_method;
     Printing printing;
+    String adresa, nume, telefon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +98,6 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
         recyclerViewProductsList.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
         recyclerViewProductsList.setLayoutManager(gridLayoutManager);
-
         if (printing != null) {
             printing.setPrintingCallback(this);
         }
@@ -237,7 +243,21 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                 alertDialog.show();
             }
         });
+        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        users.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                adresa = dataSnapshot.child("adresa").getValue().toString();
+                nume = dataSnapshot.child("nume").getValue().toString();
+                telefon = dataSnapshot.child("telefon").getValue().toString();
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+
+
+        });
         buttonPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -261,17 +281,17 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
 
                     printables.add(new RawPrintable.Builder(new byte[]{27, 33, 0}).build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("CUPTORUL CU PIZZA\n\n")
+                            .setText(nume+"\n\n")
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Str. Castanilor, Lupeni\n\n")
+                            .setText(adresa+"\n\n")
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("123456789\n\n")
+                            .setText(telefon+"\n\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
@@ -309,7 +329,7 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                                 .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
                                 .build());
                         printables.add(new TextPrintable.Builder()
-                                .setText(MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n\n")
+                                .setText(MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n")
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_35())
                                 .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())

@@ -28,8 +28,8 @@ open class DefaultPrinter : Printer() {
 
 
     companion object {
-        val ALIGNMENT_RIGHT: Byte = 6
-        val ALIGNMENT_LEFT: Byte = 5
+        val ALIGNMENT_RIGHT: Byte = 3
+        val ALIGNMENT_LEFT: Byte = 2
         val ALIGNMENT_CENTER: Byte = 1
         val EMPHASIZED_MODE_BOLD: Byte = 1
         val EMPHASIZED_MODE_NORMAL: Byte = 0
