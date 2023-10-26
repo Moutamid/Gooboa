@@ -278,20 +278,25 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                 } else {
                     printing = Printooth.INSTANCE.printer();
                     ArrayList<Printable> printables = new ArrayList<>();
-
                     printables.add(new RawPrintable.Builder(new byte[]{27, 33, 0}).build());
                     printables.add(new TextPrintable.Builder()
                             .setText(nume+"\n\n")
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText(adresa+"\n\n")
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText(telefon+"\n\n")
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_NORMAL())
@@ -300,48 +305,61 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setText("--------------------------\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("Receipt\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("---------------------------\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .build());
                     printables.add(new TextPrintable.Builder()
-                            .setText("Description             Price\n")
+                            .setText("Description                Price\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .build());
 
                     for (int i = 0; i < MainActivity.modelClass.getLineItemsList().size(); i++) {
                         String finalName = MainActivity.modelClass.getLineItemsList().get(i).getName().replaceAll("<span>", "");
                         String[] separated = finalName.split("- </span>");
-                        String s = separated[0];
+                        String title = separated[0];
                         printables.add(new TextPrintable.Builder()
-                                .setText(s)
+                                .setText(title)
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_35())
+                                .setAlignment(5)
+                                .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
                                 .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+
                                 .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
                                 .build());
                         printables.add(new TextPrintable.Builder()
                                 .setText(MainActivity.modelClass.getLineItemsList().get(i).getSubTotal() + "0\n")
                                 .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_35())
-                                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_RIGHT())
+                                .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+                                .setAlignment(3)
                                 .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
                                 .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
                                 .build());
-
                         for (int j = 0; j < MainActivity.modelClass.getLineItemsList().get(i).getExtraData().size(); j++) {
                             printables.add(new TextPrintable.Builder()
-                                    .setText(" " + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ":" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n")
-                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_VERY_SMALL())
-                                    .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
-
+                                    .setText(MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getKey() + ":" + MainActivity.modelClass.getLineItemsList().get(i).getExtraData().get(j).getValue() + "\n")
+                                    .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_35())
+                                    .setAlignment(5)
+                                    .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+                                    .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_NORMAL())
+                                    .setFontSize(DefaultPrinter.Companion.getFONT_SIZE_SMALL())
                                     .build());
                         }
 
@@ -350,13 +368,15 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
                             .setText("--------------------------\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                            .setLayoutParams(DefaultPrinter.Companion.getMATCH_PARENT())
+
                             .build());
                     printables.add(new TextPrintable.Builder()
                             .setText("Total" + "                 " + MainActivity.modelClass.getTotal() + " " + payment_method + "\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
-                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_LEFT())
+                            .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
                             .build());
-                      printables.add(new TextPrintable.Builder()
+                    printables.add(new TextPrintable.Builder()
                             .setText("---------------------------\n")
                             .setLineSpacing(DefaultPrinter.Companion.getLINE_SPACING_30())
                             .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
@@ -453,6 +473,8 @@ public class OrderDetailsActivity extends BaseActivity implements PrintingCallba
             String finalName2 = finalName.replaceAll("</span>", "");
             holder.tvProduct.setText(finalName2 + " - " + product.getQty());
             holder.tvQty.setText(MainActivity.modelClass.getLineItemsList().get(position).getSubTotal() + "0");
+
+
             EventsListAdapter2 adapter2 = new EventsListAdapter2(OrderDetailsActivity.this, product.getExtraData());
             holder.recyclerView.setAdapter(adapter2);
         }

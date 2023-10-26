@@ -1,5 +1,6 @@
 package com.mazenrashed.printooth.data.printer
 
+import android.widget.RelativeLayout
 import com.mazenrashed.printooth.data.DefaultPrintingImagesHelper
 import com.mazenrashed.printooth.data.PrintingImagesHelper
 import com.mazenrashed.printooth.data.converter.Converter
@@ -28,9 +29,9 @@ open class DefaultPrinter : Printer() {
 
 
     companion object {
-        val ALIGNMENT_RIGHT: Byte = 3
-        val ALIGNMENT_LEFT: Byte = 2
-        val ALIGNMENT_CENTER: Byte = 1
+        val ALIGNMENT_RIGHT: Int = 3
+        val ALIGNMENT_LEFT: Int = 5
+        val ALIGNMENT_CENTER: Int = 4
         val EMPHASIZED_MODE_BOLD: Byte = 1
         val EMPHASIZED_MODE_NORMAL: Byte = 0
         val UNDERLINED_MODE_ON: Byte = 1
@@ -41,6 +42,11 @@ open class DefaultPrinter : Printer() {
         val FONT_SIZE_LARGE: Byte = 0x10
         val FONT_SIZE_SMALL: Byte = 0x00
         val FONT_SIZE_VERY_SMALL: Byte = 0x00
+        val MATCH_PARENT: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+
 
         val CHARCODE_PC437: Byte = 0x00 // USA / Standard Europe
         val CHARCODE_JIS: Byte = 0x01 // Japanese Katakana

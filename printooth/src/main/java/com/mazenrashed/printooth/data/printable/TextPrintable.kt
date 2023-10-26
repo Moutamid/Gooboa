@@ -1,12 +1,13 @@
 package com.mazenrashed.printooth.data.printable
 
+import android.widget.RelativeLayout
 import com.mazenrashed.printooth.data.converter.Converter
 import com.mazenrashed.printooth.data.printer.DefaultPrinter
 import com.mazenrashed.printooth.data.printer.Printer
 
 data class TextPrintable private constructor(val text: String,
                                              val fontSize: Byte,
-                                             val alignment: Byte,
+                                             val alignment: Int,
                                              val newLinesAfter: Int,
                                              val bold: Byte,
                                              val underlined: Byte,
@@ -16,7 +17,7 @@ data class TextPrintable private constructor(val text: String,
 
     override fun getPrintableByteArray(printer: Printer): List<ByteArray> {
         val operations = mutableListOf(
-                printer.justificationCommand.plus(alignment),
+
                 printer.fontSizeCommand.plus(fontSize),
                 printer.emphasizedModeCommand.plus(bold),
                 printer.underlineModeCommand.plus(underlined),
@@ -33,6 +34,9 @@ data class TextPrintable private constructor(val text: String,
         if (newLinesAfter > 0) {
             operations.add(printer.feedLineCommand.plus(newLinesAfter.toByte()))
         }
+        if (alignment > 0) {
+            operations.add(printer.justificationCommand.plus(alignment.toByte()))
+        }
 
         return operations
     }
@@ -40,7 +44,8 @@ data class TextPrintable private constructor(val text: String,
     class Builder {
         private var text = ""
         private var fontSize = DefaultPrinter.FONT_SIZE_NORMAL
-        private var alignment: Byte = DefaultPrinter.ALIGNMENT_LEFT
+        private var param = DefaultPrinter.MATCH_PARENT
+        private var alignment: Int = 5
         private var newLinesAfter = 0
         private var bold: Byte = DefaultPrinter.EMPHASIZED_MODE_NORMAL
         private var underlined: Byte = DefaultPrinter.UNDERLINED_MODE_OFF
@@ -58,7 +63,12 @@ data class TextPrintable private constructor(val text: String,
             return this
         }
 
-        fun setAlignment(alignment: Byte): Builder {
+        fun setLayoutParams(param:  RelativeLayout.LayoutParams): Builder {
+            this.param = param
+            return this
+        }
+
+        fun setAlignment(alignment: Int): Builder {
             this.alignment = alignment
             return this
         }

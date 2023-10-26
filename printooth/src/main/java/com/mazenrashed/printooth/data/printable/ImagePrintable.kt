@@ -7,12 +7,12 @@ import com.mazenrashed.printooth.data.printer.DefaultPrinter
 import com.mazenrashed.printooth.data.printer.Printer
 
 data class ImagePrintable private constructor(val image: Bitmap,
-                                              val alignment: Byte,
+                                              val alignment: Int,
                                               val newLinesAfter: Int) : Printable {
 
     override fun getPrintableByteArray(printer: Printer): List<ByteArray> {
         val operations = mutableListOf(
-                printer.justificationCommand.plus(alignment),
+//                printer.justificationCommand.plus(alignment),
                 printer.printingImagesHelper.getBitmapAsByteArray(image)
         )
 
@@ -24,7 +24,7 @@ data class ImagePrintable private constructor(val image: Bitmap,
     }
 
     class Builder() {
-        private var alignment: Byte = DefaultPrinter.ALIGNMENT_LEFT
+        private var alignment: Int = DefaultPrinter.ALIGNMENT_LEFT
         private var newLinesAfter = 0
         private lateinit var image: Bitmap
 
@@ -36,7 +36,7 @@ data class ImagePrintable private constructor(val image: Bitmap,
             this.image = image
         }
 
-        fun setAlignment(alignment: Byte): Builder {
+        fun setAlignment(alignment: Int): Builder {
             this.alignment = alignment
             return this
         }
